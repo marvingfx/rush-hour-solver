@@ -14,7 +14,7 @@ class Car:
         return self.id + ' ' + str(self.length) + ' ' + self.direction
 
     def canMove(self, board):
-        # checks horizontal
+        # checks horizontally orientated cars
         if self.direction == 'h':
             for line in board:
                 if line.find(self.id) >= 0:
@@ -29,7 +29,7 @@ class Car:
                         return False
             return True
 
-        # checks vertical
+        # checks vertically orientated cars
         elif self.direction == 'v':
             for block in range(len(board)):
                 col = [row[block] for row in board]
