@@ -1,5 +1,6 @@
 import sys
 import os.path
+import boardUtils
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -16,11 +17,7 @@ elif not os.path.isfile(sys.argv[1]):
 # load the board
 else:
     board = ([line.strip('\n') for line in open(sys.argv[1])])
-    for line in board:
-        print line
-
-# exit tile
-# board[(len(board) / 2) - 1][len(board) - 1];
+    cars = boardUtils.getCars(board)
 
 # TODO
 # recursive function
