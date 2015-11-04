@@ -1,6 +1,6 @@
 class Car:
     id = ''
-    direction = 'h'
+    direction = ''
     length = 0
     def __init__(self, id, direction, length):
         self.id = id
@@ -14,7 +14,39 @@ class Car:
         return self.id + ' ' + str(self.length) + ' ' + self.direction
 
     def canMove(self, board):
-        return True;
+        # checks horizontal
+        if self.direction == 'h':
+            for line in board:
+                if line.find(self.id) >= 0:
+                    # dimensions of car
+                    left = line.find(self.id)
+                    right = left + self.length - 1
+                    try:
+                        if not line[left - 1] == '.' and not line[right + 1] == '.':
+                            return False
+                        break
+                    except:
+                        return False
+            return True
+
+        # checks vertical
+        elif self.direction == 'v':
+            for block in range(len(board)):
+                col = [row[block] for row in board]
+                try:
+                    top = col.index(self.id)
+                    bottom = top + self.length - 1
+                    if not col[top - 1] == '.' and not col[bottom + 1] == '.':
+                        return False
+                    break
+                except:
+                    continue
+            return True
+
+        return False
+
+    def move(self, number, board):
+        return board
 
 # gets the cars from the board
 def getCars(board):

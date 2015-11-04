@@ -24,4 +24,4 @@ else:
 # stack
 # check for move validity
 # move
-# archive
+# archive boards and steps
