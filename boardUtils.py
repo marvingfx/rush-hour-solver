@@ -14,32 +14,30 @@ class Car:
         # checks horizontally orientated cars
         if self.direction == 'h':
             for line in board:
-                try:
-                    left = line.index(self.id)
-                    right = left + self.length - 1
-                    if not line [left-1] == '.' and not line[right + 1] == '.':
+                if self.id in line:
+                    try:
+                        left = line.index(self.id)
+                        right = left + self.length - 1
+                        if line [left-1] == '.' or line[right + 1] == '.':
+                            return True
+                    except:
                         return False
-                    else:
-                        return True
-                except:
-                    continue
+            return False
 
         # checks vertically orientated cars
         elif self.direction == 'v':
             for block in range(len(board)):
                 col = [row[block] for row in board]
-                try:
-                    top = col.index(self.id)
-                    bottom = top + self.length - 1
-                    if not col[top - 1] == '.' and not col[bottom + 1] == '.':
+                if self.id in col:
+                    try:
+                        top = col.index(self.id)
+                        bottom = top + self.length - 1
+                        if col[top - 1] == '.' or col[bottom + 1] == '.':
+                            return True
+                    except:
                         return False
-                    else:
-                        return True
-                    break
-                except:
-                    continue
+            return False
 
-        return False
 
     def move(self, number, board):
         return board
