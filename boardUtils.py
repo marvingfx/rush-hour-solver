@@ -10,7 +10,7 @@ class Car:
     def __str__(self):
         return self.id + ' ' + str(self.length) + ' ' + self.direction
 
-    def canMove(self, board):
+    def getMoves(self, board):
         # checks horizontally orientated cars
         if self.direction == 'h':
             for line in board:
@@ -18,11 +18,14 @@ class Car:
                     try:
                         left = line.index(self.id)
                         right = left + self.length - 1
-                        if line [left-1] == '.' or line[right + 1] == '.':
-                            return True
+                        moves = []
+                        if line [left-1] == '.':
+                            moves.append(-1)
+                        if line[right + 1] == '.':
+                            moves.append(1)
                     except:
-                        return False
-            return False
+                        continue
+            return moves
 
         # checks vertically orientated cars
         elif self.direction == 'v':
@@ -32,11 +35,14 @@ class Car:
                     try:
                         top = col.index(self.id)
                         bottom = top + self.length - 1
-                        if col[top - 1] == '.' or col[bottom + 1] == '.':
-                            return True
+                        moves = []
+                        if col[top - 1] == '.':
+                            moves.append(-1)
+                        if col[bottom + 1] == '.':
+                            moves.append(1)
                     except:
-                        return False
-            return False
+                        continue
+            return moves
 
 
     def move(self, number, board):
