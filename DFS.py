@@ -1,6 +1,7 @@
 import sys
 import os.path
 import boardUtils
+from timeit import default_timer as timer
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -18,6 +19,10 @@ elif not os.path.isfile(sys.argv[1]):
 else:
     board = ([list(line.strip('\n')) for line in open(sys.argv[1])])
     cars = boardUtils.getCars(board)
+
+start = timer()
+end = timer()
+print end - start
 
 # TODO
 # recursive function
