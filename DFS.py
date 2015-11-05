@@ -16,7 +16,7 @@ elif not os.path.isfile(sys.argv[1]):
 
 # load the board
 else:
-    board = ([line.strip('\n') for line in open(sys.argv[1])])
+    board = ([list(line.strip('\n')) for line in open(sys.argv[1])])
     cars = boardUtils.getCars(board)
 
 # TODO

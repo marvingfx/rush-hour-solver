@@ -1,7 +1,4 @@
 class Car:
-    id = ''
-    direction = ''
-    length = 0
     def __init__(self, id, direction, length):
         self.id = id
         self.direction = direction
@@ -17,17 +14,15 @@ class Car:
         # checks horizontally orientated cars
         if self.direction == 'h':
             for line in board:
-                if line.find(self.id) >= 0:
-                    # dimensions of car
-                    left = line.find(self.id)
+                try:
+                    left = line.index(self.id)
                     right = left + self.length - 1
-                    try:
-                        if not line[left - 1] == '.' and not line[right + 1] == '.':
-                            return False
-                        break
-                    except:
+                    if not line [left-1] == '.' and not line[right + 1] == '.':
                         return False
-            return True
+                    else:
+                        return True
+                except:
+                    continue
 
         # checks vertically orientated cars
         elif self.direction == 'v':
@@ -38,10 +33,11 @@ class Car:
                     bottom = top + self.length - 1
                     if not col[top - 1] == '.' and not col[bottom + 1] == '.':
                         return False
+                    else:
+                        return True
                     break
                 except:
                     continue
-            return True
 
         return False
 
