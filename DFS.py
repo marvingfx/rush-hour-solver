@@ -17,7 +17,7 @@ elif not os.path.isfile(sys.argv[1]):
 
 # load the board
 else:
-    board = ([list(line.strip('\n')) for line in open(sys.argv[1])])
+    board = [line.strip('\n') for line in open(sys.argv[1])]
     cars = boardUtils.getCars(board)
 
 start = timer()
@@ -30,3 +30,4 @@ print end - start
 # check for move validity
 # move
 # archive boards and steps
+# class board + hasing
