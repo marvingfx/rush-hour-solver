@@ -17,8 +17,13 @@ elif not os.path.isfile(sys.argv[1]):
 
 # load the board
 else:
-    parent = boardUtils.Board(sys.argv[1])
-    cars = boardUtils.getCars(parent)
+    parent = boardUtils.Board()
+    parent.create(sys.argv[1])
+    cars = boardUtils.getcars(parent)
+    states = set()
+    states.add(parent)
+
+
 
 start = timer()
 end = timer()
