@@ -48,8 +48,4 @@ print end - start
 
 # TODO
 # recursive function
-# stack
-# check for move validity
-# move
-# archive boards and steps
-# class board + hashing
+# archive steps
