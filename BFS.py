@@ -21,8 +21,7 @@ else:
     parent.load(sys.argv[1])
     cars = boardUtils.get_vehicles(parent)
     states = set()
-    queue = []
-    queue.append(parent)
+    queue = list()
     queue.append(parent)
 
 
@@ -31,21 +30,21 @@ def BFS():
         node = queue.pop(0)
         for car in cars:
             moves = car.get_moves(node)
-            for move in moves:
-                child = car.move(move, node)
-                if child.board[2][5] == 99:
-                    for row in child.board:
-                        print row
-                    print str(len(states)) + ' saved states'
-                    print child.path
-                    return
-                if child not in states:
-                    states.add(child)
-                    queue.append(child)
+            if moves:
+                for move in moves:
+                    child = car.move(move, node)
+                    if child.board[2][5] == 99:
+                        print 'Saved ' + str(len(states)) + ' states'
+                        print str(len(child.path) + 1) + ' steps taken'
+                        return
+                    if child not in states:
+                        states.add(child)
+                        queue.append(child)
 start = timer()
 BFS()
 end = timer()
-print end - start
+print str(end - start) + ' seconds elapsed'
 
 # TODO
 # recursive function
+# archive steps
