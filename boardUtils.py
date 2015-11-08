@@ -5,6 +5,7 @@ import copy
 class Board:
     def __init__(self):
         self.board = []
+        self.path = []
 
     def load(self, path):
         """
@@ -17,6 +18,9 @@ class Board:
                 for value in row:
                     int_row.append(int(value))
                 self.board.append(int_row)
+
+    def update_path(self, vehicle, move):
+        self.path.append((vehicle, move))
 
     def __str__(self):
         return str(self.board)
@@ -91,6 +95,7 @@ class Vehicle:
         """
 
         node = copy.deepcopy(parent)
+        node.update_path(self.id, number)
 
         if self.orientation == 'h':
             row = node.board[self.index]

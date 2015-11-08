@@ -37,6 +37,7 @@ def BFS():
                     for row in child.board:
                         print row
                     print str(len(states)) + ' saved states'
+                    print child.path
                     return
                 if child not in states:
                     states.add(child)
@@ -48,4 +49,3 @@ print end - start
 
 # TODO
 # recursive function
-# archive steps
