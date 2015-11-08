@@ -1,17 +1,21 @@
 import csv
+import copy
 
 
 class Board:
     def __init__(self):
         self.board = []
 
-    def create(self, path):
+    def load(self, path):
         with open(path) as f:
             for row in csv.reader(f):
                 int_row = []
                 for value in row:
                     int_row.append(int(value))
                 self.board.append(int_row)
+
+    def create_node(self, board):
+        self.board = board
 
     def __str__(self):
         return str(self.board)
@@ -69,12 +73,26 @@ class Car:
 
     # Creates a new board / node
     def move(self, number, parent):
-        node = parent.board
+        node = copy.deepcopy(parent)
         if self.orientation == 'h':
-            row = node[self.index]
-
+            row = node.board[self.index]
+            if number > 0:
+                row[row.index(self.id) + self.length] = self.id
+                row[row.index(self.id)] = 0
+            else:
+                row[row.index(self.id) - 1] = self.id
+                row[row.index(self.id) + self.length] = 0
+            node.board[self.index] = row
         elif self.orientation == 'v':
-            col = [row[self.index] for row in node]
+            col = [row[self.index] for row in node.board]
+            if number > 0:
+                col[col.index(self.id) + self.length] = self.id
+                col[col.index(self.id)] = 0
+            else:
+                col[col.index(self.id) - 1] = self.id
+                col[col.index(self.id) + self.length] = 0
+            for row in node.board:
+                row[self.index] = col[node.board.index(row)]
 
         # Create new board instance
         return node

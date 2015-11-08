@@ -18,7 +18,7 @@ elif not os.path.isfile(sys.argv[1]):
 # load the board
 else:
     parent = boardUtils.Board()
-    parent.create(sys.argv[1])
+    parent.load(sys.argv[1])
     cars = boardUtils.getcars(parent)
     states = set()
     states.add(parent)
