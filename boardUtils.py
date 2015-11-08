@@ -7,15 +7,16 @@ class Board:
         self.board = []
 
     def load(self, path):
+        """
+        loads board from file
+        :param path: path to file
+        """
         with open(path) as f:
             for row in csv.reader(f):
                 int_row = []
                 for value in row:
                     int_row.append(int(value))
                 self.board.append(int_row)
-
-    def create_node(self, board):
-        self.board = board
 
     def __str__(self):
         return str(self.board)
@@ -27,7 +28,7 @@ class Board:
         return str(self.board) == other
 
 
-class Car:
+class Vehicle:
     def __init__(self, id, index, orientation, length):
         self.id = id
         self.index = index
@@ -40,39 +41,55 @@ class Car:
     def __str__(self):
         return str(self.id) + ' length:' + str(self.length) + ' orientation:' + self.orientation + ' row or col:' + str(self.index)
 
-    def getmoves(self, parent):
-        # checks horizontally orientated cars
+    def get_moves(self, parent):
+        """
+        gets the possible moves from current node
+        :param parent: parent node
+        :return: list with possible moves
+        """
+        # checks horizontally orientated vehicles
         if self.orientation == 'h':
+            # gets the row in which the vehicle is located
             row = parent.board[self.index]
+            # see if vehicle can move by one
             try:
                 left = row.index(self.id)
                 right = left + self.length - 1
                 moves = []
                 if row[left-1] == 0 and not left == 0:
                     moves.append(-1)
-                if row[right + 1] == 0 and not right == len(parent.board):
+                if row[right + 1] == 0 and not right == len(parent.board) - 1:
                     moves.append(1)
             except:
                 return moves
-            return moves
 
-        # checks vertically orientated cars
+        # checks vertically orientated vehicles
         elif self.orientation == 'v':
+            # gets the column in which the vehicle is located
             col = [row[self.index] for row in parent.board]
+            # see if vehicle can move by one
             try:
                 top = col.index(self.id)
                 bottom = top + self.length - 1
                 moves = []
                 if col[top - 1] == 0 and not top == 0:
                     moves.append(-1)
-                if col[bottom + 1] == 0 and not bottom == len(parent.board):
+                if col[bottom + 1] == 0 and not bottom == len(parent.board) - 1:
                     moves.append(1)
             except:
                 return moves
-            return moves
 
-    # Creates a new board / node
+        # return an list with possible moves
+        return moves
+
     def move(self, number, parent):
+        """
+        updates the board by moving a vehicle
+        :param number: number to move
+        :param parent: parent node
+        :return: new node
+        """
+
         node = copy.deepcopy(parent)
 
         if self.orientation == 'h':
@@ -100,8 +117,12 @@ class Car:
         return node
 
 
-# gets the cars from the board
-def getcars(parent):
+def get_vehicles(parent):
+    """
+    creates a list of vehicle objects from a board
+    :param parent: parent node
+    :return: list with vehicle objects
+    """
 
     # count occurances of letters
     occurances = []
@@ -118,7 +139,7 @@ def getcars(parent):
         for item in row:
             if not item == 0 and currentCar == item:
                 if item not in hor:
-                    hor.append(Car(item, parent.board.index(row), 'h', lengths.get(item)))
+                    hor.append(Vehicle(item, parent.board.index(row), 'h', lengths.get(item)))
                     lengths.pop(item)
             currentCar = item
 
@@ -128,7 +149,7 @@ def getcars(parent):
         for i in range(len(parent.board)):
             col = [row[i] for row in parent.board]
             if item in col:
-                ver.append(Car(item, i, 'v', lengths[item]))
+                ver.append(Vehicle(item, i, 'v', lengths[item]))
 
     # combine lists
     return hor + ver
