@@ -21,7 +21,32 @@ else:
     parent.load(sys.argv[1])
     cars = boardUtils.getcars(parent)
     states = set()
-    states.add(parent)
+    for car in cars:
+        print car
+    queue = []
+    queue.append(parent)
+    queue.append(parent)
+
+
+def BFS():
+    while len(queue) > 0:
+        node = queue.pop(0)
+        for car in cars:
+            moves = car.getmoves(node)
+            for move in moves:
+                child = car.move(move, node)
+                if child.board[2][5] == 99:
+                    for row in child.board:
+                        print row
+                    return
+                if child not in states:
+                    states.add(child)
+                    queue.append(child)
+
+BFS()
+
+
+
 
 
 

@@ -74,6 +74,7 @@ class Car:
     # Creates a new board / node
     def move(self, number, parent):
         node = copy.deepcopy(parent)
+
         if self.orientation == 'h':
             row = node.board[self.index]
             if number > 0:
@@ -83,6 +84,7 @@ class Car:
                 row[row.index(self.id) - 1] = self.id
                 row[row.index(self.id) + self.length] = 0
             node.board[self.index] = row
+
         elif self.orientation == 'v':
             col = [row[self.index] for row in node.board]
             if number > 0:
@@ -122,11 +124,11 @@ def getcars(parent):
 
     # get vertical cars
     ver = []
-    for item in list(set(lengths)):
-        for i in range(len(parent.board)-1):
+    for item in lengths:
+        for i in range(len(parent.board)):
             col = [row[i] for row in parent.board]
             if item in col:
-                ver.append(Car(item, i, 'v', lengths.get(item)))
+                ver.append(Car(item, i, 'v', lengths[item]))
 
     # combine lists
     return hor + ver
