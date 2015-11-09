@@ -1,5 +1,6 @@
 import csv
 import copy
+import collections
 
 
 class Board:
@@ -62,7 +63,7 @@ class Vehicle:
                 moves = []
                 if row[left-1] == 0 and not left == 0:
                     moves.append(-1)
-                if row[right + 1] == 0 and not right == len(parent.board) - 1:
+                if row[right + 1] == 0 and not right == len(parent.board):
                     moves.append(1)
             except:
                 return moves
@@ -78,7 +79,7 @@ class Vehicle:
                 moves = []
                 if col[top - 1] == 0 and not top == 0:
                     moves.append(-1)
-                if col[bottom + 1] == 0 and not bottom == len(parent.board) - 1:
+                if col[bottom + 1] == 0 and not bottom == len(parent.board):
                     moves.append(1)
             except:
                 return moves
@@ -139,14 +140,12 @@ def get_vehicles(parent):
 
     # get horizontal cars
     hor = []
-    currentCar = parent.board[0][0]
     for row in parent.board:
-        for item in row:
-            if not item == 0 and currentCar == item:
-                if item not in hor:
-                    hor.append(Vehicle(item, parent.board.index(row), 'h', lengths.get(item)))
-                    lengths.pop(item)
-            currentCar = item
+        duplicates = [vehicle for vehicle, count in collections.Counter(row).items() if count > 1 and not vehicle == 0]
+        for vehicle in duplicates:
+            if vehicle not in hor:
+                hor.append(Vehicle(vehicle, parent.board.index(row), 'h', lengths.get(vehicle)))
+                lengths.pop(vehicle)
 
     # get vertical cars
     ver = []
