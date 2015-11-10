@@ -32,21 +32,23 @@ else:
 
 
 def DFS():
-   while stack:
-       node = stack.pop()
-       for car in cars:
+    while len(stack) > 0:
+        node = stack.pop()
+        for car in cars:
             moves = car.get_moves(node)
             if moves:
                 for move in moves:
                     child = car.move(move, node)
-                    if (child not in states):
+                    if child not in states:
                         states.add(child)
+                        print states
                     else:
-                        if(child.board[row][col] == 99):
+                        if child.board[row][col] == 99:
                             print child
+                            return child
                         else:
-                            stack.push(child)
-
+                            stack.append(child)
+                            print stack
 
 
 
