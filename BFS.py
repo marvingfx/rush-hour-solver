@@ -2,7 +2,6 @@ import sys
 import os.path
 import boardUtils
 from timeit import default_timer as timer
-import copy
 
 # check if file is supplied
 if len(sys.argv) <= 1:
