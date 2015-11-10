@@ -1,5 +1,4 @@
 import csv
-import copy
 import collections
 
 
@@ -22,6 +21,15 @@ class Board:
 
     def update_path(self, vehicle, move):
         self.path.append((vehicle, move))
+
+    def copy(self):
+        new_board = []
+        for row in self.board:
+            new_row = []
+            for item in row:
+                new_row.append(item)
+            new_board.append(new_row)
+        return new_board, list(self.path)
 
     def __str__(self):
         return str(self.board)
@@ -63,7 +71,7 @@ class Vehicle:
                 moves = []
                 if row[left-1] == 0 and not left == 0:
                     moves.append(-1)
-                if row[right + 1] == 0 and not right == len(parent.board):
+                if row[right + 1] == 0 and not right == len(parent.board) - 1:
                     moves.append(1)
             except:
                 return moves
@@ -79,7 +87,7 @@ class Vehicle:
                 moves = []
                 if col[top - 1] == 0 and not top == 0:
                     moves.append(-1)
-                if col[bottom + 1] == 0 and not bottom == len(parent.board):
+                if col[bottom + 1] == 0 and not bottom == len(parent.board) - 1:
                     moves.append(1)
             except:
                 return moves
@@ -95,7 +103,8 @@ class Vehicle:
         :return: new node
         """
 
-        node = copy.deepcopy(parent)
+        node = Board()
+        node.board, node.path = parent.copy()
         node.update_path(self.id, number)
 
         if self.orientation == 'h':
