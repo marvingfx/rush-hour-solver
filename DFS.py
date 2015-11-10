@@ -31,19 +31,29 @@ else:
 
 
 
-def DFS(graph,start,goal):
-   stack = [(start, [start])]
+def DFS():
    while stack:
-        (vertex, path) = stack.pop()
-        for next in graph[vertex] - set(path):
-            if next == goal:
-                yield path + [next]
-            else:
-                stack.append((next, path + [next]))
+       node = stack.pop()
+       for car in cars:
+            moves = car.get_moves(node)
+            if moves:
+                for move in moves:
+                    child = car.move(move, node)
+                    if (child not in states):
+                        states.add(child)
+                    else:
+                        if(child.board[row][col] == 99):
+                            print child
+                        else:
+                            stack.push(child)
+
+
+
 
 
 
 start = timer()
+print DFS()
 end = timer()
 print str(end - start) + ' seconds elapsed'
 
