@@ -7,9 +7,6 @@ class Board:
         self.board = []
         self.path = []
 
-    def __eq__(self, other):
-        return self.board == other
-
     def __str__(self):
         """
         generates a neatly formatted string from self.board

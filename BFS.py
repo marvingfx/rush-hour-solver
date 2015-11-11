@@ -16,8 +16,7 @@ def breadth_first_search():
 
         # generate new nodes if the cars can move
         for car in cars:
-            moves = car.get_moves(node)
-            for move in moves:
+            for move in car.get_moves(node):
 
                 # create new node
                 new_node = car.move(move, node)
