@@ -7,6 +7,28 @@ class Board:
         self.board = []
         self.path = []
 
+    def __eq__(self, other):
+        return self.board == other
+
+    def __str__(self):
+        """
+        generates a neatly formatted string from self.board
+        :return: formatted string
+        """
+        print_board = ""
+        for row in self.board:
+            for item in row:
+                print_board += str(item) + '\t'
+            print_board += '\n'
+        return print_board
+
+    def get_hash_value(self):
+        """
+        generates unique value for hashing
+        :return: value for hashing
+        """
+        return str(self.board)
+
     def load(self, path):
         """
         loads board from file
@@ -20,25 +42,19 @@ class Board:
                 self.board.append(int_row)
 
     def update_path(self, vehicle, move):
+        """
+        updates the path to current node
+        :param vehicle: vehicle that has been moved
+        :param move: the move that the vehicle has made
+        """
         self.path.append((vehicle, move))
 
     def copy(self):
-        new_board = []
-        for row in self.board:
-            new_row = []
-            for item in row:
-                new_row.append(item)
-            new_board.append(new_row)
-        return new_board, list(self.path)
-
-    def __str__(self):
-        return str(self.board)
-
-    def __hash__(self):
-        return hash(str(self.board))
-
-    def __eq__(self, other):
-        return str(self.board) == other
+        """
+        copies current board and path for node
+        :return: copy of board and path
+        """
+        return [row[:] for row in self.board], self.path[:]
 
 
 class Vehicle:
