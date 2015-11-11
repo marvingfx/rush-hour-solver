@@ -1,7 +1,19 @@
 import sys
 import os.path
 import boardUtils
+import collections
 from timeit import default_timer as timer
+
+
+def depth_first_search(node):
+    states.add(node.get_hash_value())
+    for car in cars:
+        for move in car.get_moves(node):
+            new_node = car.move(move, node)
+            if new_node.get_hash_value() not in states:
+                depth_first_search(new_node)
+
+
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -15,46 +27,38 @@ elif not os.path.isfile(sys.argv[1]):
     print "Usage: python BFS.py <board.txt>"
     sys.exit()
 
-# load the board
+# load board from file
 else:
     parent = boardUtils.Board()
     parent.load(sys.argv[1])
+
+    # load cars
     cars = boardUtils.get_vehicles(parent)
+
+    # set the row and column for which has to be ch
     if len(parent.board) % 2 == 0:
         row = (len(parent.board) / 2) - 1
     else:
         row = len(parent.board) / 2
     col = len(parent.board) - 1
+
+    # initialize stack and states
+    stack = collections.deque()
     states = set()
-    stack = list()
+
+    routes = []
+
+    # add parent to stack and states
     stack.append(parent)
-
-
-
-def DFS():
-    while len(stack) > 0:
-        node = stack.pop()
-        for car in cars:
-            moves = car.get_moves(node)
-            if moves:
-                for move in moves:
-                    child = car.move(move, node)
-                    if child not in states:
-                        states.add(child)
-                        print states
-                    else:
-                        if child.board[row][col] == 99:
-                            print child
-                            return child
-                        else:
-                            stack.append(child)
-                            print stack
-
-
-
+    # states.add(parent.get_hash_value())
 
 start = timer()
-print DFS()
+sys.setrecursionlimit(100000)
+depth_first_search(parent)
+print str(len(states)) + " states saved"
+# routes.sort(key=len)
+# for route in routes:
+#     print route
 end = timer()
 print str(end - start) + ' seconds elapsed'
 
