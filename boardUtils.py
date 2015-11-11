@@ -141,8 +141,9 @@ class Vehicle:
             else:
                 col[col.index(self.id) - 1] = self.id
                 col[col.index(self.id) + self.length] = 0
-            for row in node.board:
-                row[self.index] = col[node.board.index(row)]
+
+            for index, row in enumerate(node.board):
+                row[self.index] = col[index]
 
         # Create new board instance
         return node
