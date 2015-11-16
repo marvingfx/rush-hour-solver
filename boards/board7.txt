@@ -1,0 +1,12 @@
+a,.,.,.,.,.,b,c,c,c,d,d
+a,.,.,.,.,d,b,.,.,.,e,f
+g,g,g,h,h,d,i,j,j,.,e,f
+k,l,.,.,.,m,i,n,n,o,o,.
+k,l,p,p,p,m,i,q,q,q,.,.
+k,l,?,?,s,t,.,.,.,.,.,.
+u,u,u,v,s,t,w,x,.,y,z,z
+A,A,A,v,B,B,w,x,.,y,C,C
+D,D,E,F,F,F,w,G,G,G,.,H
+.,.,E,I,I,I,J,.,K,K,L,H
+.,.,.,.,.,.,J,.,.,M,L,N
+.,O,O,P,P,P,J,Q,Q,M,L,N
