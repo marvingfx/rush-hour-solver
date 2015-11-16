@@ -6,15 +6,16 @@ class Board:
     width = 6
     winning_tile = 36
 
-    def __init__(self, parent, board, vehicles, moved):
+    def __init__(self, parent, board, vehicles, moved, depth = 0):
         self.parent = parent
         self.board = board
         self.vehicles = vehicles
         self.moved = moved
+        self.depth = depth
 
     # TODO: fix issue for board3
     def get_hash(self):
-        return self.board.tobytes()
+        return self.board.tobytes() + str(self.depth)
 
     def load_from_file(self, path):
         """
@@ -38,6 +39,7 @@ class Board:
                         self.board.append(False)
                     else:
                         self.board.append(True)
+        self.board.fill()
 
         Board.winning_tile = int(math.floor((len(string_from_board) / 2) - 1))
 
