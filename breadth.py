@@ -29,6 +29,10 @@ else:
         row = len(root.board) / 2
     col = len(root.board) - 1
 
+    for car in cars:
+        print car
+        print car.get_moves(root)
+
     # initialize queue and states
     queue = list()
     states = set()
@@ -55,6 +59,8 @@ def BFS():
 start = timer()
 current = BFS()
 end = timer()
+
+print len(states)
 moves = collections.deque()
 while current.parent is not None:
     moves.appendleft(current.move)

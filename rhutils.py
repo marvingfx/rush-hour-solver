@@ -21,7 +21,7 @@ class Board:
         return board_as_string
 
     def get_hash_value(self):
-        return str(self.board) + str(self.depth)
+        return str(self.board)
 
     def load_from_file(self, path):
         with open(path) as f:
