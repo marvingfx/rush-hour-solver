@@ -41,6 +41,7 @@ class Board:
                         self.board.append(True)
         self.board.fill()
 
+        # TODO: change this, it is wrong
         Board.winning_tile = int(math.floor((len(string_from_board) / 2) - 1))
 
         # get the vehicles
@@ -96,13 +97,15 @@ class Board:
         # create new node
         node = Board(self, self.board[:], self.vehicles.copy(), (vehicle, move))
 
+        old = node.vehicles.pop(vehicle)
+
         # initialize variables
-        first = node.vehicles[vehicle][1]
-        last = node.vehicles[vehicle][2]
+        first = old[1]
+        last = old[2]
         update = []
 
         # move horizontally orientated cars
-        if node.vehicles[vehicle][0] == 'h':
+        if old[0] == 'h':
             if move > 0:
                 node.board[first] = 0
                 node.board[last + 1] = 1
@@ -124,9 +127,9 @@ class Board:
                 update.append((first - self.width, last - self.width))
 
         # update vehicle dictionary
-        node.vehicles[vehicle] = (node.vehicles[vehicle][0], update[0][0], update[0][1])
+        node.vehicles[vehicle] = (old[0], update[0][0], update[0][1])
 
         return node
 
     def win(self):
-        return self.vehicles['?'][2] == Board.winning_tile
+        return self.vehicles['?'][2] == 44
