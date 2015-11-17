@@ -65,8 +65,10 @@ moves = collections.deque()
 while current.parent is not None:
     moves.appendleft(current.move)
     current = current.parent
-print len(moves)
-print end - start
+
+print "\nSolved in %d moves, in the time of %f seconds" % (len(moves), (end - start))
+print moves
+print
 
 
 

@@ -1,8 +1,49 @@
-import rhutils
-import sys
-import os.path
-import collections
+import sys, rushutils, os.path, collections
 from timeit import default_timer as timer
+
+
+def iterative_deepening(root):
+    states = dict()
+    stack = collections.deque()
+    next = collections.deque()
+    max_depth = 0
+    stack.append(root)
+    states[root.get_hash()] = root.depth
+
+    while len(stack) > 0:
+        node = stack.popleft()
+        if node.depth < max_depth:
+            for move in node.get_moves():
+                child = node.move(move[0], move[1])
+                if child.win():
+                    return child
+                if not states.__contains__(child.get_hash):
+                    states[child.get_hash()] = child.depth
+                    stack.appendleft(child)
+
+        else:
+            next.appendleft(node)
+
+        if len(stack) == 0:
+            stack.extendleft(next)
+            next.clear()
+            max_depth += 1
+
+
+
+
+
+def depth_first_search(node):
+    if node.win():
+        return node
+    for move in node.get_moves():
+        child = node.move(move[0], move[1])
+        if child.get_hash() not in states:
+            states.add(node.get_hash())
+            test = depth_first_search(child)
+            if test:
+                return test
+
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -18,49 +59,36 @@ elif not os.path.isfile(sys.argv[1]):
 
 # load board from file
 else:
-    root = rhutils.Board(None, None, 0)
+
+    # initialize root node
+    root = rushutils.Board(None, None, None, None)
     root.load_from_file(sys.argv[1])
-    cars = rhutils.get_vehicles(root)
 
-    # set the row and column for which has to be ch
-    if len(root.board) % 2 == 0:
-        row = (len(root.board) / 2) - 1
-    else:
-        row = len(root.board) / 2
-    col = len(root.board) - 1
+    # initialize queue and states archive
+    # states = set()
+    # states.add(root.get_hash())
 
-def iterative_deepening():
-    stack = collections.deque()
-    stack.appendleft(root)
-    states = set()
-    max = 0
-    while len(stack) > 0:
-        node = stack.popleft()
-        if node.depth < max:
-            for car in cars:
-                for move in car.get_moves(node):
-                    child = rhutils.Board(node, (car.id, move), node.depth + 1)
-                    car.move(move, child)
-                    if child.get_hash_value() not in states:
-                        states.add(child.get_hash_value())
-                        if child.board[row][col] == 99:
-                            return child
-                        stack.appendleft(child)
+    sys.setrecursionlimit(100000)
 
-        if len(stack) == 0:
-            states = set()
-            states.add(root.get_hash_value())
-            stack.appendleft(root)
-            max += 1
-
-
-
+# start the timer
 start = timer()
-current = iterative_deepening()
+
+# get first route to solution
+current = iterative_deepening(root)
+
+# stop the timer
+end = timer()
+
+
+# get the moves from to the winning state
+
 moves = collections.deque()
 while current.parent is not None:
-    moves.appendleft(current.move)
+    moves.appendleft(current.moved)
     current = current.parent
+
 print len(moves)
-end = timer()
-print end - start
+
+# print results
+print "\nSolved in the time of %f seconds" % (end - start)
+print

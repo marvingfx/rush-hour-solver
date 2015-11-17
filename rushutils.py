@@ -6,7 +6,7 @@ class Board:
     width = 6
     winning_tile = 36
 
-    def __init__(self, parent, board, vehicles, moved, depth = 0):
+    def __init__(self, parent, board, vehicles, moved, depth=0):
         self.parent = parent
         self.board = board
         self.vehicles = vehicles
@@ -15,7 +15,7 @@ class Board:
 
     # TODO: fix issue for board3
     def get_hash(self):
-        return self.board.tobytes() + str(self.depth)
+        return self.board.tobytes()
 
     def load_from_file(self, path):
         """
@@ -95,7 +95,7 @@ class Board:
         """
 
         # create new node
-        node = Board(self, self.board[:], self.vehicles.copy(), (vehicle, move))
+        node = Board(self, self.board[:], self.vehicles.copy(), (vehicle, move), self.depth + 1)
 
         old = node.vehicles.pop(vehicle)
 
@@ -132,4 +132,4 @@ class Board:
         return node
 
     def win(self):
-        return self.vehicles['?'][2] == 44
+        return self.vehicles['?'][2] == 17
