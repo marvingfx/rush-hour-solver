@@ -1,4 +1,4 @@
-import sys, rushutils, os.path, collections
+import sys, rushutils, os.path
 from timeit import default_timer as timer
 
 
@@ -7,7 +7,7 @@ def bfs():
         node = queue.pop(0)
         for move in node.get_moves():
             child = node.move(move[0], move[1])
-            if move[0] == '?':
+            if move[0] == 0:
                 if child.win():
                     return child
             if child.get_hash() not in states:
@@ -49,10 +49,11 @@ current = bfs()
 end = timer()
 
 # get the moves from to the winning state
-moves = collections.deque()
+moves = []
 while current.parent is not None:
-    moves.appendleft(current.moved)
+    moves.append(current.moved)
     current = current.parent
+moves.reverse()
 
 # print results
 print "\nSolved in %d moves, in the time of %f seconds" % (len(moves), (end - start))
