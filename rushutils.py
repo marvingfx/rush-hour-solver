@@ -6,7 +6,7 @@ class Board:
     width = 0
     tile = 0
 
-    def __init__(self, parent, board, vehicles, moved, depth=0):
+    def __init__(self, parent=None, board=None, vehicles=None, moved=None, depth=0):
         self.parent = parent
         self.board = board
         self.vehicles = vehicles
