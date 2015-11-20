@@ -7,10 +7,4 @@
 **How to run**
 
     python bfsearch.py boards/board.txt
-    
-**note**
-
-board 3 has some issues right now
-   
---
    
