@@ -56,6 +56,7 @@ while current.parent is not None:
 moves.reverse()
 
 # print results
-print "\nSolved in %d moves, in the time of %f seconds" % (len(moves), (end - start))
+print "\nExplored %d states in %f seconds" % (len(states), (end - start))
+print "\nSolved in %d moves" % (len(moves))
 print moves
 print
