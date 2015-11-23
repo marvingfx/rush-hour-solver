@@ -47,9 +47,9 @@ moves = []
 while current.parent is not None:
     moves.append(current.moved)
     current = current.parent
+moves.reverse()
 
 print "\nExplored %d states in %f seconds" % (len(states), (end - start))
 print "\nSolved in %d moves" % (len(moves))
-for move in moves:
-    print root.vehicles[move[0]], move
+print moves
 print
