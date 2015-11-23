@@ -6,12 +6,13 @@ class Board:
     width = 0
     tile = 0
 
-    def __init__(self, parent=None, board=None, vehicles=None, moved=None, depth=0):
+    def __init__(self, parent=None, board=None, vehicles=None, moved=None, depth=0, value=None):
         self.parent = parent
         self.board = board
         self.vehicles = vehicles
         self.moved = moved
         self.depth = depth
+        self.value = value
 
     def get_hash(self):
         return tuple(self.vehicles)
@@ -23,6 +24,31 @@ class Board:
     def __eq__(self, other):
         return self.vehicles == other.vehicles
     """
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def get_value(self):
+        return self.depth + self.get_min_distance() + self.get_additional_steps()
+
+    def get_additional_steps(self):
+        """
+        gets the minimum number of vehicles that need to be moved
+        :return: minimum number of vehicles
+        """
+        steps = 0
+        origin = self.vehicles[0][3]
+        for i in range(1, self.get_min_distance() + 1):
+            if self.board[origin + i]:
+                steps += 1
+        return steps
+
+    def get_min_distance(self):
+        """
+        gets the minimum distance that has to be covered by the red vehicle
+        :return: minimum steps
+        """
+        return Board.tile - self.vehicles[0][3]
 
     def load_from_file(self, path):
         """
@@ -144,6 +170,7 @@ class Board:
 
         # update vehicle dictionary
         node.vehicles[index] = (old[0], old[1], update[0][0], update[0][1])
+        node.value = node.get_value()
         return node
 
     def win(self):
