@@ -15,6 +15,10 @@ class Board:
         self.value = value
 
     def get_hash(self):
+        """
+        gets a hashable value
+        :return: tuple of self.vehicles
+        """
         return tuple(self.vehicles)
 
     """ may be implemented later
@@ -26,9 +30,18 @@ class Board:
     """
 
     def __lt__(self, other):
+        """
+        compares two Board instances on their heuristic value
+        :param other:
+        :return:
+        """
         return self.value < other.value
 
     def get_value(self):
+        """
+        gets the heuristic value of the current board
+        :return: heuristic value
+        """
         return self.depth + self.get_min_distance() + self.get_additional_steps()
 
     def get_additional_steps(self):
@@ -94,6 +107,8 @@ class Board:
             if not name == '.':
 
                 # add vehicle to list
+                # vehicles consist of a name, a boolean indicating whether vehicle is horizontally orientated
+                # and the first and last encounter of the vehicle in the bitarray
                 if last - first > 2:
                     self.vehicles.append((name, False, first, last))
                 else:
@@ -107,6 +122,7 @@ class Board:
         moves = []
         for index, vehicle in enumerate(self.vehicles):
 
+            # horizontally orientated vehicle
             if vehicle[1]:
 
                 # check if vehicle can go backwards
@@ -117,6 +133,7 @@ class Board:
                 if not (vehicle[3] - Board.width + 1) % Board.width == 0 and self.board[vehicle[3] + 1] == 0:
                         moves.append([index, 1])
 
+            # vertically orientated vehicle
             else:
 
                 # check if vehicle can go upwards
@@ -174,4 +191,8 @@ class Board:
         return node
 
     def win(self):
+        """
+        checks whether the last tile is occupied by the red vehicle
+        :return: boolean which indicates a win
+        """
         return self.vehicles[0][3] == Board.tile
