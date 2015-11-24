@@ -30,7 +30,7 @@ elif not os.path.isfile(sys.argv[1]):
 else:
 
     # initialize root node
-    root = rushutils.Board(None, None, None, None)
+    root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
     # initialize queue and states archive
