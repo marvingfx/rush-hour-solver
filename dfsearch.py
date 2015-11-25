@@ -9,7 +9,7 @@ def dfs():
             child = node.move(move[0], move[1])
             if move[0] == 0:
                 if child.win():
-                    return child
+                    solutions.append(child)
             if child.get_hash() not in states:
                 states.add(child.get_hash())
                 stack.append(child)
@@ -30,12 +30,13 @@ elif not os.path.isfile(sys.argv[1]):
 else:
 
     # initialize root node
-    root = rushutils.Board(None, None, None, None)
+    root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
     # initialize queue and states archive
     states = set()
     stack = list()
+    solutions = list()
     states.add(root.get_hash())
     stack.append(root)
 
@@ -43,20 +44,25 @@ else:
 start = timer()
 
 # get first route to solution
-current = dfs()
+dfs()
 
 # stop the timer
 end = timer()
 
 # get the moves from to the winning state
-moves = []
-while current.parent is not None:
-    moves.append(current.moved)
-    current = current.parent
-moves.reverse()
+shortest_solution = list()
+for endpoint in solutions:
+    solution = list()
+    current = endpoint
+    while current.parent is not None:
+        solution.append(current.moved)
+        current = current.parent
+    if len(shortest_solution) == 0 or len(shortest_solution) > len(solution):
+        solution.reverse()
+        shortest_solution = solution
 
 # print results
 print "\nExplored %d states in %f seconds" % (len(states), (end - start))
-print "\nSolved in %d moves" % (len(moves))
-print moves
+print "\nFound %d solutions, shortest solution takes %d moves" % (len(solutions), len(shortest_solution))
+print shortest_solution
 print
