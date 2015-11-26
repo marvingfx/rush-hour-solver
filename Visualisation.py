@@ -50,16 +50,19 @@ def exit():
     pygame.quit()
     sys.exit()
 
+def pause():
+    while True:
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            exit()
+        if event.type == KEYDOWN:
+            break
+
 def check_pause():
     for event in pygame.event.get(QUIT):
         exit()
     for event in pygame.event.get(KEYDOWN):
-        while True:
-            event = pygame.event.wait()
-            if event.type == QUIT:
-                exit()
-            if event.type == KEYDOWN:
-                break
+        pause()
 
 # actual visualisation
 pygame.init()
@@ -69,12 +72,7 @@ window.fill((255, 255, 255))
 draw_board()
 pygame.display.update()
 
-while True:
-    event = pygame.event.wait()
-    if event.type == QUIT:
-        exit()
-    if event.type == KEYDOWN:
-        break
+pause()
 
 while len(solution) > 0:
     check_pause()
@@ -82,8 +80,9 @@ while len(solution) > 0:
     update_board(solution.pop(0))
     draw_board()
     pygame.display.update()
-    pygame.time.wait(100)
+    pygame.time.wait(150)
 
+# wait for input
 while True:
     event = pygame.event.wait()
     if event.type == QUIT:
