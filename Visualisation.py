@@ -1,4 +1,4 @@
-import pygame, csv, math, random, sys
+import pygame, math, random, sys
 from pygame.locals import *
 from collections import Counter
 
@@ -12,12 +12,20 @@ bwidth = int(math.sqrt(len(board)))
 vehicles = [('?', True, 15, 16), ('a', False, 2, 14), ('c', False, 5, 17), ('b', True, 3, 4), ('e', False, 21, 33), ('d', True, 22, 23), ('g', True, 25, 26), ('f', True, 34, 35), ('h', False, 24, 30)]
 solution = [(1, 1), (3, -1), (3, -1), (8, -1), (8, -1), (6, -1), (1, 1), (1, 1), (0, -1), (0, -1), (4, -1), (4, -1), (4, -1), (5, -1), (2, 1), (2, 1), (7, -1), (2, 1), (8, -1), (8, -1), (0, -1), (1, -1), (1, -1), (6, 1), (6, 1), (6, 1), (1, 1), (1, 1), (0, 1), (8, 1), (3, -1), (8, 1), (8, 1), (0, -1), (1, -1), (1, -1), (1, -1), (5, -1), (5, -1), (4, 1), (7, -1), (7, -1), (8, 1), (5, -1), (1, 1), (3, 1), (3, 1), (3, 1), (1, -1), (3, 1), (4, -1), (5, 1), (5, 1), (5, 1), (1, 1), (1, 1), (8, -1), (7, -1), (1, 1), (0, 1), (8, -1), (8, -1), (8, -1), (0, -1), (1, -1), (1, -1), (1, -1), (5, -1), (5, -1), (4, 1), (5, -1), (1, 1), (6, -1), (6, -1), (4, 1), (4, 1), (6, -1), (1, 1), (1, 1), (0, 1), (0, 1), (0, 1), (0, 1)]
 colorlist = Counter(board)
+
+# assigns a random color to each vehicle
 for vehicle in colorlist:
     if not vehicle == '?':
-        colorlist[vehicle] = (int(random.random()*255),int(random.random()*255),int(random.random()*255))
+        colorlist[vehicle] = (int(random.random() * 256), int(random.random() * 256), int(random.random() * 256))
+
+# assign red color to main vehicle
 colorlist['?'] = (255, 0, 0)
 
 def update_board(move):
+    """
+    updates the list representation of the board
+    :param move: tuple containing the index of the vehicle and the movement
+    """
     vehicle = vehicles[move[0]]
     if vehicle[1]:
         # move right
@@ -42,15 +50,24 @@ def update_board(move):
         vehicles[move[0]] = (vehicle[0], vehicle[1], vehicle[2] + (move[1] * bwidth), vehicle[3] + (move[1] * bwidth))
 
 def draw_board():
+    """
+    draws the current board on the window
+    """
     for index, tile in enumerate(board):
         if not tile == '.':
-             pygame.draw.rect(window, colorlist[tile], ((index % bwidth) * 80, (index / bwidth) * 80, 80, 80))
+             pygame.draw.rect(window, colorlist[tile], ((index % bwidth) * TILE, (index / bwidth) * TILE, TILE, TILE))
 
 def exit():
+    """
+    quits the current program
+    """
     pygame.quit()
     sys.exit()
 
 def pause():
+    """
+    pauses the game, waits for input from user
+    """
     while True:
         event = pygame.event.wait()
         if event.type == QUIT:
@@ -59,8 +76,15 @@ def pause():
             break
 
 def check_pause():
+    """
+    checks if a button is pressed
+    """
+
+    # quit program
     for event in pygame.event.get(QUIT):
         exit()
+
+    # pause program
     for event in pygame.event.get(KEYDOWN):
         pause()
 
@@ -72,8 +96,10 @@ window.fill((255, 255, 255))
 draw_board()
 pygame.display.update()
 
+# pause the game so that it doesn't start automatically
 pause()
 
+# iterate over the moves in the solution
 while len(solution) > 0:
     check_pause()
     window.fill((255, 255, 255))
@@ -82,7 +108,7 @@ while len(solution) > 0:
     pygame.display.update()
     pygame.time.wait(150)
 
-# wait for input
+# wait for input to quit the game
 while True:
     event = pygame.event.wait()
     if event.type == QUIT:
