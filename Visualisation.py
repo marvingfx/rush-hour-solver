@@ -2,11 +2,9 @@ import pygame, math, random, sys
 from pygame.locals import *
 from collections import Counter
 
+# hardcode, to be removed
 WIDTH = 480
 TILE = 80
-FPS = 30
-
-# hardcode, to be removed
 board = list("..abbc..a..c..a??c...eddhgge..h..eff")
 bwidth = int(math.sqrt(len(board)))
 vehicles = [('?', True, 15, 16), ('a', False, 2, 14), ('c', False, 5, 17), ('b', True, 3, 4), ('e', False, 21, 33), ('d', True, 22, 23), ('g', True, 25, 26), ('f', True, 34, 35), ('h', False, 24, 30)]
