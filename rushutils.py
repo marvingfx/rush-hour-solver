@@ -56,8 +56,14 @@ class Board:
                 steps += 2
                 if self.board[origin + i] - Board.width * 2 and self.board[origin + i] + Board.width * 2:
                     steps += 1
-            elif self.board[origin + i]:
+            elif self.board[origin + i] and self.board[origin + i] - Board.width:
                 steps += 1
+                if self.board[origin + i] + Board.width and self.board[origin + i] - 2 * Board.width:
+                    steps += 1
+            elif self.board[origin + i] and self.board[origin + i] + Board.width:
+                steps += 1
+                if self.board[origin + i] - Board.width and self.board[origin + i] + 2 * Board.width:
+                    steps += 1
         return steps
 
     def get_min_distance(self):
