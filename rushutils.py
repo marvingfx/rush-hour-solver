@@ -51,7 +51,6 @@ class Board:
         """
 
         # TODO: Get the second level of vehicles and check if they can move
-        # change bitarray to list with indexes of vehicles
 
         steps = 0
         origin = self.vehicles[0][3]
