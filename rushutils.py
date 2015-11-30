@@ -49,11 +49,15 @@ class Board:
         gets the minimum number of vehicles that need to be moved
         :return: minimum number of vehicles
         """
+
+        # TODO: Get the second level of vehicles and check if they can move
+        # change bitarray to list with indexes of vehicles
+
         steps = 0
         origin = self.vehicles[0][3]
         for i in range(1, self.get_min_distance() + 1):
 
-            # long vehicle (3)
+            # long vehicle (3 tiles)
             if self.board[origin + i] and self.board[origin + i] - Board.width and self.board[origin + i] + Board.width:
                 steps += 2
 
@@ -61,17 +65,18 @@ class Board:
                 if self.board[origin + i] - Board.width * 2 and self.board[origin + i] + Board.width * 2:
                     steps += 2
 
-            # normal vehicle (2)
+            # normal vehicle (2 tiles)
             elif self.board[origin + i] and self.board[origin + i] - Board.width:
                 steps += 1
 
                 # check if vehicle is blocked by other vehicles
                 if self.board[origin + i] + Board.width and self.board[origin + i] - 2 * Board.width:
                     steps += 2
+
             elif self.board[origin + i] and self.board[origin + i] + Board.width:
                 steps += 1
 
-                # check if vehicle is blocked by other vehicles
+                # check if the vehicle is blocked by other vehicles
                 if self.board[origin + i] - Board.width and self.board[origin + i] + 2 * Board.width:
                     steps += 2
 
