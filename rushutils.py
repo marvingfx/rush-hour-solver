@@ -52,18 +52,29 @@ class Board:
         steps = 0
         origin = self.vehicles[0][3]
         for i in range(1, self.get_min_distance() + 1):
+
+            # long vehicle (3)
             if self.board[origin + i] and self.board[origin + i] - Board.width and self.board[origin + i] + Board.width:
                 steps += 2
+
+                # check if vehicle is blocked by other vehicles
                 if self.board[origin + i] - Board.width * 2 and self.board[origin + i] + Board.width * 2:
-                    steps += 1
+                    steps += 2
+
+            # normal vehicle (2)
             elif self.board[origin + i] and self.board[origin + i] - Board.width:
                 steps += 1
+
+                # check if vehicle is blocked by other vehicles
                 if self.board[origin + i] + Board.width and self.board[origin + i] - 2 * Board.width:
-                    steps += 1
+                    steps += 2
             elif self.board[origin + i] and self.board[origin + i] + Board.width:
                 steps += 1
+
+                # check if vehicle is blocked by other vehicles
                 if self.board[origin + i] - Board.width and self.board[origin + i] + 2 * Board.width:
-                    steps += 1
+                    steps += 2
+
         return steps
 
     def get_min_distance(self):
