@@ -5,6 +5,7 @@ from bitarray import bitarray
 class Board:
     width = 0
     tile = 0
+    vehicle_index = list()
 
     def __init__(self, parent=None, board=None, vehicles=None, moved=None, depth=0, value=None):
         self.parent = parent
@@ -15,21 +16,14 @@ class Board:
         self.value = value
 
     def __str__(self):
-        board = ['.'] * Board.width * Board.width
-        for vehicle in self.vehicles:
-            board[vehicle[2]] = vehicle[0]
-            board[vehicle[3]] = vehicle[0]
-            if vehicle[1]:
-                if vehicle[3] - vehicle[2] > 1:
-                    board[vehicle[2] + 1] = vehicle[0]
-            else:
-                if vehicle[3] - vehicle[2] > Board.width:
-                    board[vehicle[2] + Board.width] = vehicle[0]
         string = ""
-        for index, letter in enumerate(board):
+        for index, identifier in enumerate(self.board):
             if index % Board.width == 0:
                 string += "\n"
-            string += letter
+            if identifier is None:
+                string += "."
+            else:
+                string += Board.vehicle_index[identifier]
         return string
 
     def get_hash(self):
@@ -60,7 +54,6 @@ class Board:
         gets the heuristic value of the current board
         :return: heuristic value
         """
-        print self.depth, self.get_min_distance(), self.get_additional_steps()
         return self.depth + self.get_min_distance() + self.get_additional_steps()
 
     def get_additional_steps(self):
@@ -70,34 +63,41 @@ class Board:
         """
 
         steps = 0
-        origin = self.vehicles[0][3]
+        origin = self.vehicles[0][2]
 
         # check for vehicles in the direct path of the red vehicle
         for i in range(1, self.get_min_distance() + 1):
+            if self.board[origin + i] is not None:
 
-            # long vehicle (3 tiles)
-            if self.board[origin + i] and self.board[origin + i - Board.width] and self.board[origin + i + Board.width]:
-                steps += 2
-
-                # check if vehicle is blocked by other vehicles
-                if self.board[origin + i - Board.width * 2] and self.board[origin + i + 2 * Board.width]:
+                # long vehicle (3 tiles, center tile in path of red vehicle)
+                if self.board[origin + i - Board.width] == self.board[origin + i + Board.width]:
                     steps += 2
+                    if self.board[origin + i - Board.width * 2] is not None and self.board[origin + i + Board.width * 2] is not None:
+                        steps += 2
 
-            # normal vehicle (2 tiles)
-            elif self.board[origin + i] and self.board[origin + i - Board.width]:
-                steps += 1
+                # long vehicle (3 tiles, bottom tile in path of red vehicle)
+                elif self.board[origin + i] == self.board[origin + i - Board.width * 2]:
+                    steps += 1
+                    if self.board[origin + i - Board.width * 3] is not None and self.board[origin + i + Board.width] is not None:
+                        steps += 2
 
-                # check if vehicle is blocked by other vehicles
-                if self.board[origin + i + Board.width] and self.board[origin + i - 2 * Board.width]:
-                    steps += 2
+                # long vehicle (3 tiles, top tile in path of red vehicle)
+                elif self.board[origin + i] == self.board[origin + i - Board.width * 2]:
+                    steps += 1
+                    if self.board[origin + i + Board.width * 3] is not None and self.board[origin + i - Board.width] is not None:
+                        steps += 2
 
-            # normal vehicle (2 tiles)
-            elif self.board[origin + i] and self.board[origin + i + Board.width]:
-                steps += 1
+                # short vehicle (2 tiles, bottom tile in path of red vehicle)
+                elif self.board[origin + i - Board.width] == self.board[origin + i]:
+                    steps += 1
+                    if self.board[origin + i - Board.width * 2] is not None and self.board[origin + i + Board.width] is not None:
+                        steps += 2
 
-                # check if the vehicle is blocked by other vehicles
-                if self.board[origin + i - Board.width] and self.board[origin + i + 2 * Board.width]:
-                    steps += 2
+                # short vehicle (2 tiles, top tile in path of red vehicle)
+                else:
+                    steps += 1
+                    if self.board[origin + i + Board.width * 2] is not None and self.board[origin + i - Board.width] is not None:
+                        steps += 2
 
         return steps
 
@@ -106,7 +106,7 @@ class Board:
         gets the minimum distance that has to be covered by the red vehicle
         :return: minimum steps
         """
-        return Board.tile - self.vehicles[0][3]
+        return Board.tile - self.vehicles[0][2]
 
     def load_from_file(self, path):
         """
@@ -115,23 +115,16 @@ class Board:
         """
 
         # construct board
-        string_from_board = ""
-        self.board = bitarray()
+        board = ""
 
         # read file
         with open(path) as file:
             for row in csv.reader(file):
                 for value in row:
-                    string_from_board += value
-
-                    # update bit array representation of board
-                    if value == '.':
-                        self.board.append(False)
-                    else:
-                        self.board.append(True)
+                    board += value
 
         # set class attributes
-        Board.width = int(math.sqrt(len(string_from_board)))
+        Board.width = int(math.sqrt(len(board)))
         if Board.width % 2 == 0:
             Board.tile = (Board.width / 2 * Board.width - 1)
         else:
@@ -139,25 +132,40 @@ class Board:
 
         # load vehicles
         self.vehicles = list()
-        values = collections.Counter(string_from_board)
+        values = collections.Counter(board)
 
         # get the red vehicle first
-        self.vehicles.append(('?', True, string_from_board.index('?'), string_from_board.rindex('?')))
+        self.vehicles.append((True, board.index('?'), board.rindex('?')))
+        Board.vehicle_index.append('?')
         values.pop('?')
 
         # get other vehicles
-        for name in values:
-            first = string_from_board.index(name)
-            last = string_from_board.rindex(name)
-            if not name == '.':
+        for identifier in values:
+            first = board.index(identifier)
+            last = board.rindex(identifier)
+            if not identifier == ".":
 
-                # add vehicle to list
-                # vehicles consist of a name, a boolean indicating whether vehicle is horizontally orientated
-                # and the first and last encounter of the vehicle in the bitarray
                 if last - first > 2:
-                    self.vehicles.append((name, False, first, last))
+                    self.vehicles.append((False, first, last))
                 else:
-                    self.vehicles.append((name, True, first, last))
+                    self.vehicles.append((True, first, last))
+
+                Board.vehicle_index.append(identifier)
+
+        self.board = list(board)
+        for index, vehicle in enumerate(self.vehicles):
+            self.board[vehicle[1]] = index
+            self.board[vehicle[2]] = index
+            if vehicle[0]:
+                if vehicle[2] - vehicle[1] > 1:
+                    self.board[vehicle[1] + 1] = index
+            else:
+                if vehicle[2] - vehicle[1] > Board.width:
+                    self.board[vehicle[1] + Board.width] = index
+
+        for index, value in enumerate(self.board):
+            if value == ".":
+                self.board[index] = None
 
     def get_moves(self):
         """
@@ -168,26 +176,26 @@ class Board:
         for index, vehicle in enumerate(self.vehicles):
 
             # horizontally orientated vehicle
-            if vehicle[1]:
+            if vehicle[0]:
 
                 # check if vehicle can go backwards
-                if not vehicle[2] % Board.width == 0 and self.board[vehicle[2] - 1] == 0:
-                        moves.append([index, -1])
+                if not vehicle[1] % Board.width == 0 and self.board[vehicle[1] - 1] is None:
+                    moves.append([index, -1])
 
                 # check if vehicle can go forwards
-                if not (vehicle[3] - Board.width + 1) % Board.width == 0 and self.board[vehicle[3] + 1] == 0:
-                        moves.append([index, 1])
+                if not (vehicle[2] - Board.width + 1) % Board.width == 0 and self.board[vehicle[2] + 1] is None:
+                    moves.append([index, 1])
 
             # vertically orientated vehicle
             else:
 
                 # check if vehicle can go upwards
-                if vehicle[2] >= Board.width and self.board[vehicle[2] - Board.width] == 0:
-                        moves.append([index, -1])
+                if vehicle[1] >= Board.width and self.board[vehicle[1] - Board.width] is None:
+                    moves.append([index, -1])
 
                 # check if vehicle can go downwards
-                if vehicle[3] < Board.width * Board.width - Board.width and self.board[vehicle[3] + Board.width] == 0:
-                        moves.append([index, 1])
+                if vehicle[2] < Board.width * Board.width - Board.width and self.board[vehicle[2] + Board.width] is None:
+                    moves.append([index, 1])
 
         return moves
 
@@ -205,33 +213,32 @@ class Board:
         old = node.vehicles[index]
 
         # initialize variables
-        first = old[2]
-        last = old[3]
+        first = old[1]
+        last = old[2]
 
         # move horizontally orientated vehicles
-        if old[1]:
+        if old[0]:
             if move > 0:
-                node.board[first] = 0
-                node.board[last + 1] = 1
+                node.board[first] = None
+                node.board[last + 1] = index
                 update.append((first + 1, last + 1))
             else:
-                node.board[first - 1] = 1
-                node.board[last] = 0
+                node.board[first - 1] = index
+                node.board[last] = None
                 update.append((first - 1, last - 1))
 
         # move vertically orientated vehicles
         else:
             if move > 0:
-                node.board[first] = 0
-                node.board[last + Board.width] = 1
+                node.board[first] = None
+                node.board[last + Board.width] = index
                 update.append((first + Board.width, last + Board.width))
             else:
-                node.board[first - Board.width] = 1
-                node.board[last] = 0
+                node.board[first - Board.width] = index
+                node.board[last] = None
                 update.append((first - Board.width, last - Board.width))
 
-        # update vehicle dictionary
-        node.vehicles[index] = (old[0], old[1], update[0][0], update[0][1])
+        node.vehicles[index] = (old[0], update[0][0], update[0][1])
         node.value = node.get_value()
         return node
 
@@ -240,4 +247,4 @@ class Board:
         checks whether the last tile is occupied by the red vehicle
         :return: boolean which indicates a win
         """
-        return self.vehicles[0][3] == Board.tile
+        return self.vehicles[0][2] == Board.tile
