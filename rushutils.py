@@ -14,6 +14,24 @@ class Board:
         self.depth = depth
         self.value = value
 
+    def __str__(self):
+        board = ['.'] * Board.width * Board.width
+        for vehicle in self.vehicles:
+            board[vehicle[2]] = vehicle[0]
+            board[vehicle[3]] = vehicle[0]
+            if vehicle[1]:
+                if vehicle[3] - vehicle[2] > 1:
+                    board[vehicle[2] + 1] = vehicle[0]
+            else:
+                if vehicle[3] - vehicle[2] > Board.width:
+                    board[vehicle[2] + Board.width] = vehicle[0]
+        string = ""
+        for index, letter in enumerate(board):
+            if index % Board.width == 0:
+                string += "\n"
+            string += letter
+        return string
+
     def get_hash(self):
         """
         gets a hashable value
@@ -42,18 +60,19 @@ class Board:
         gets the heuristic value of the current board
         :return: heuristic value
         """
+        print self.depth, self.get_min_distance(), self.get_additional_steps()
         return self.depth + self.get_min_distance() + self.get_additional_steps()
 
     def get_additional_steps(self):
         """
-        gets the minimum number of vehicles that need to be moved
+        gets a minimum number of vehicles that need to be moved
         :return: minimum number of vehicles
         """
 
-        # TODO: Get the second level of vehicles and check if they can move
-
         steps = 0
         origin = self.vehicles[0][3]
+
+        # check for vehicles in the direct path of the red vehicle
         for i in range(1, self.get_min_distance() + 1):
 
             # long vehicle (3 tiles)
@@ -72,6 +91,7 @@ class Board:
                 if self.board[origin + i + Board.width] and self.board[origin + i - 2 * Board.width]:
                     steps += 2
 
+            # normal vehicle (2 tiles)
             elif self.board[origin + i] and self.board[origin + i + Board.width]:
                 steps += 1
 
