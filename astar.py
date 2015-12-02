@@ -13,6 +13,8 @@ def astar():
             if child.get_hash() not in states:
                 states.add(child.get_hash())
                 heapq.heappush(pqueue, child)
+            else:
+                del child
 
 # check if file is supplied
 if len(sys.argv) <= 1:
