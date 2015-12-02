@@ -128,7 +128,13 @@ class Board:
         gets a cost estimate of the completion of the board
         :return: cost estimate
         """
-        return self.depth + self.get_min_distance() + self.get_additional_steps()
+        return self.depth + self.get_min_distance() + self.get_additional_steps() + self.get_priority()
+
+    def get_priority(self):
+        if self.moved[0] == 0:
+            return -1
+        else:
+            return 0
 
     def is_blocked(self, index):
         if index is None:
