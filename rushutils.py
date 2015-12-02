@@ -130,6 +130,31 @@ class Board:
         """
         return self.depth + self.get_min_distance() + self.get_additional_steps()
 
+    def is_blocked(self, index):
+        if index is None:
+            return False
+
+        if self.vehicles[index][0]:
+
+            # check if vehicle can go backwards
+            if not self.vehicles[index][1] % Board.width == 0 and self.board[self.vehicles[index][1] - 1] is None:
+                return False
+
+            # check if vehicle can go forwards
+            if not (self.vehicles[index][2] - Board.width + 1) % Board.width == 0 and self.board[self.vehicles[index][2] + 1] is None:
+                return False
+
+        else:
+            # check if vehicle can go upwards
+            if self.vehicles[index][1] >= Board.width and self.board[self.vehicles[index][1] - Board.width] is None:
+                return False
+
+            # check if vehicle can go downwards
+            if self.vehicles[index][2] < Board.width * Board.width - Board.width and self.board[self.vehicles[index][2] + Board.width] is None:
+                return False
+
+        return True
+
     def get_additional_steps(self):
         """
         gets a minimum number of steps to be completed
@@ -140,37 +165,24 @@ class Board:
 
         # check for vehicles in the direct path of the red vehicle
         for i in range(1, self.get_min_distance() + 1):
-            if self.board[origin + i] is not None:
+            index = self.board[origin + i]
+            if index is not None:
 
-                # long vehicle (3 tiles, center tile in path of red vehicle)
-                if self.board[origin + i - Board.width] == self.board[origin + i + Board.width]:
+                # center tile of long vehicle in path of red vehicle
+                if self.vehicles[index][1] < origin and self.vehicles[index][2] > origin + i:
                     steps += 2
-                    if self.board[origin + i - Board.width * 2] is not None and self.board[origin + i + Board.width * 2] is not None:
-                        steps += 2
 
-                # long vehicle (3 tiles, bottom tile in path of red vehicle)
-                elif self.board[origin + i] == self.board[origin + i - Board.width * 2]:
-                    steps += 1
-                    if self.board[origin + i - Board.width * 3] is not None and self.board[origin + i + Board.width] is not None:
-                        steps += 2
-
-                # long vehicle (3 tiles, top tile in path of red vehicle)
-                elif self.board[origin + i] == self.board[origin + i - Board.width * 2]:
-                    steps += 1
-                    if self.board[origin + i + Board.width * 3] is not None and self.board[origin + i - Board.width] is not None:
-                        steps += 2
-
-                # short vehicle (2 tiles, bottom tile in path of red vehicle)
-                elif self.board[origin + i - Board.width] == self.board[origin + i]:
-                    steps += 1
-                    if self.board[origin + i - Board.width * 2] is not None and self.board[origin + i + Board.width] is not None:
-                        steps += 2
-
-                # short vehicle (2 tiles, top tile in path of red vehicle)
+                # either long or short vehicle in path of red vehicle
                 else:
                     steps += 1
-                    if self.board[origin + i + Board.width * 2] is not None and self.board[origin + i - Board.width] is not None:
-                        steps += 2
+
+                # check if vehicle in path can move, if not at least one step needs to be taken
+                if self.is_blocked(index):
+                    steps += 1
+
+                # check if directly blocking vehicles can move
+                if self.is_blocked(self.board[self.vehicles[index][1] - Board.width]) and self.is_blocked(self.board[self.vehicles[index][2] + Board.width]):
+                        steps += 1
 
         return steps
 
