@@ -136,29 +136,20 @@ class Board:
             return 0
 
     def is_blocked(self, index):
-        if index is None:
+        if not index:
             return False
-
-        if self.vehicles[index][0]:
-
-            # check if vehicle can go backwards
-            if not self.vehicles[index][1] % Board.width == 0 and self.board[self.vehicles[index][1] - 1] is None:
-                return False
-
-            # check if vehicle can go forwards
-            if not (self.vehicles[index][2] - Board.width + 1) % Board.width == 0 and self.board[self.vehicles[index][2] + 1] is None:
-                return False
-
+        vehicle = self.vehicles[index]
+        if vehicle[0]:
+            if vehicle[2] == 0 or self.board[vehicle[1]][vehicle[2] - 1] is not None:
+                return True
+            elif vehicle[3] == Board.width - 1 or self.board[vehicle[1]][vehicle[3] + 1] is not None:
+                return True
         else:
-            # check if vehicle can go upwards
-            if self.vehicles[index][1] >= Board.width and self.board[self.vehicles[index][1] - Board.width] is None:
-                return False
-
-            # check if vehicle can go downwards
-            if self.vehicles[index][2] < Board.width * Board.width - Board.width and self.board[self.vehicles[index][2] + Board.width] is None:
-                return False
-
-        return True
+            if vehicle[2] == 0 or self.board[vehicle[2] - 1][vehicle[1]]:
+                return True
+            elif vehicle[3] == Board.width - 1 or self.board[vehicle[3] + 1][vehicle[1]] is not None:
+                return True
+        return False
 
     def get_additional_steps(self):
         """
@@ -171,7 +162,7 @@ class Board:
         # check for vehicles in the direct path of the red vehicle
         for i in range(1, self.get_min_distance() + 1):
             index = self.board[Board.row][origin + i]
-            if index is not None:
+            if index:
                 vehicle = self.vehicles[index]
 
                 # center tile of long vehicle in path of red vehicle
@@ -181,6 +172,11 @@ class Board:
                 # either long or short vehicle in path of red vehicle
                 else:
                     steps += 1
+
+                if self.is_blocked(index):
+                    steps += 1
+                    if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
+                        steps += 1
 
         return steps
 
