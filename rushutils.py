@@ -12,6 +12,7 @@ class Board:
 
     def __init__(self, parent=None, vehicles=None, moved=None, depth=0, value=None):
         self.parent = parent
+        self.board = []
         self.vehicles = vehicles
         self.moved = moved
         self.depth = depth
