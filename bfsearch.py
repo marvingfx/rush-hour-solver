@@ -1,4 +1,4 @@
-import sys, rushutils, os.path
+import sys, rushutils_uninformed, os.path
 from timeit import default_timer as timer
 
 
@@ -30,7 +30,7 @@ elif not os.path.isfile(sys.argv[1]):
 else:
 
     # initialize root node
-    root = rushutils.Board()
+    root = rushutils_uninformed.Board()
     root.load_from_file(sys.argv[1])
 
     # initialize queue and states archive
