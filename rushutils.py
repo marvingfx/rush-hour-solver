@@ -10,9 +10,9 @@ class Board:
     # list that contains the identifiers of the vehicles
     vehicle_index = list()
 
-    def __init__(self, parent=None, vehicles=None, moved=None, depth=0, value=None):
+    def __init__(self, parent=None, board=None, vehicles=None, moved=None, depth=0, value=None):
         self.parent = parent
-        self.board = []
+        self.board = board
         self.vehicles = vehicles
         self.moved = moved
         self.depth = depth
@@ -228,10 +228,7 @@ class Board:
         """
 
         # create new node
-        node = Board(self, list(self.vehicles), (index, move), self.depth + 1)
-
-        for row in self.board:
-            node.board.append(row)
+        node = Board(self, list(self.board), list(self.vehicles), (index, move), self.depth + 1)
 
         vehicle = node.vehicles[index]
 
