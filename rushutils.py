@@ -122,6 +122,8 @@ class Board:
                 if self.board[row][col] == ".":
                     self.board[row][col] = None
 
+        Board.width -= 1
+
     def get_cost_estimate(self):
         """
         gets a cost estimate of the completion of the board
@@ -142,12 +144,12 @@ class Board:
         if vehicle[0]:
             if vehicle[2] == 0 or self.board[vehicle[1]][vehicle[2] - 1] is not None:
                 return True
-            elif vehicle[3] == Board.width - 1 or self.board[vehicle[1]][vehicle[3] + 1] is not None:
+            elif vehicle[3] == Board.width or self.board[vehicle[1]][vehicle[3] + 1] is not None:
                 return True
         else:
             if vehicle[2] == 0 or self.board[vehicle[2] - 1][vehicle[1]]:
                 return True
-            elif vehicle[3] == Board.width - 1 or self.board[vehicle[3] + 1][vehicle[1]] is not None:
+            elif vehicle[3] == Board.width or self.board[vehicle[3] + 1][vehicle[1]] is not None:
                 return True
         return False
 
@@ -185,7 +187,7 @@ class Board:
         gets the minimum distance that has to be covered by the red vehicle
         :return: minimum steps
         """
-        return Board.width - 1 - self.vehicles[0][3]
+        return Board.width - self.vehicles[0][3]
 
     def get_moves(self):
         """
@@ -203,7 +205,7 @@ class Board:
                     moves.append([index, -1])
 
                 # check if vehicle can go forwards
-                if not vehicle[3] == Board.width - 1 and self.board[vehicle[1]][vehicle[3] + 1] is None:
+                if not vehicle[3] == Board.width and self.board[vehicle[1]][vehicle[3] + 1] is None:
                     moves.append([index, 1])
 
             # vertically orientated vehicle
@@ -214,7 +216,7 @@ class Board:
                     moves.append([index, -1])
 
                 # check if vehicle can go downwards
-                if not vehicle[3] == Board.width - 1 and self.board[vehicle[3] + 1][vehicle[1]] is None:
+                if not vehicle[3] == Board.width and self.board[vehicle[3] + 1][vehicle[1]] is None:
                     moves.append([index, 1])
 
         return moves
@@ -264,4 +266,4 @@ class Board:
         checks whether the last tile is occupied by the red vehicle
         :return: boolean which indicates a win
         """
-        return self.vehicles[0][3] == Board.width - 1
+        return self.vehicles[0][3] == Board.width
