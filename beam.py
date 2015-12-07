@@ -38,10 +38,10 @@ elif not os.path.isfile(sys.argv[1]):
 
 # load board from file
 else:
-    width = 3
-
 
     # beam width information
+    width = 3
+
     if len(sys.argv) > 2:
         width = int(sys.argv[2])
         print "Using beam width of %d" % width
