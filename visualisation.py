@@ -53,7 +53,7 @@ class Visualisation:
         indexes = Counter(array)
         indexes.pop(None)
         for index in indexes:
-            indexes[index] = (int(random.random() * 256), int(random.random() * 256), int(random.random() * 256))
+            indexes[index] = (130 + int(random.random() * 60), int(random.random() * 256), int(random.random() * 256))
 
         # recolor the main vehicle
         indexes[0] = (255, 0, 0)
