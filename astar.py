@@ -1,4 +1,4 @@
-import sys, rushutils, os.path, heapq
+import sys, rushutils, os.path, heapq, visualisation
 from timeit import default_timer as timer
 
 
@@ -41,17 +41,28 @@ else:
     states.add(root.get_hash())
     heapq.heappush(pqueue, root)
 
+# start the timer
 start = timer()
+
+# get first route to solution
 current = astar()
+
+# stop the timer
 end = timer()
 
+# get the moves from to the winning state
 moves = []
 while current.parent is not None:
     moves.append(current.moved)
     current = current.parent
 moves.reverse()
 
+# print results
 print "\nExplored %d states in %f seconds" % (len(states), (end - start))
 print "\nSolved in %d moves" % (len(moves))
 print moves
 print
+
+# start visualisation if wanted
+if raw_input("visualisation? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)

@@ -1,4 +1,4 @@
-import sys, rushutils_uninformed, os.path
+import sys, rushutils_uninformed, os.path, visualisation
 from timeit import default_timer as timer
 
 
@@ -51,9 +51,9 @@ end = timer()
 
 # get the moves from to the winning state
 shortest_solution = list()
-for endpoint in solutions:
+for path in solutions:
     solution = list()
-    current = endpoint
+    current = path
     while current.parent is not None:
         solution.append(current.moved)
         current = current.parent
@@ -66,3 +66,7 @@ print "\nExplored %d states in %f seconds" % (len(states), (end - start))
 print "\nFound %d solutions, shortest solution takes %d moves" % (len(solutions), len(shortest_solution))
 print shortest_solution
 print
+
+# start visualisation if wanted
+if raw_input("visualisation? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, shortest_solution)

@@ -1,4 +1,4 @@
-import sys, rushutils_uninformed, os.path
+import sys, rushutils_uninformed, os.path, visualisation
 from timeit import default_timer as timer
 
 
@@ -60,3 +60,7 @@ print "\nExplored %d states in %f seconds" % (len(states), (end - start))
 print "\nSolved in %d moves" % (len(moves))
 print moves
 print
+
+# start visualisation if wanted
+if raw_input("visualisation? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)

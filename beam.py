@@ -1,10 +1,8 @@
-import sys, rushutils, os.path, heapq
+import sys, rushutils, os.path, heapq, visualisation
 from timeit import default_timer as timer
 
-WIDTH = 3
 
-
-def astar():
+def beamsearch(width):
     while len(pqueue) > 0:
         node = heapq.heappop(pqueue)
         beam = list()
@@ -19,11 +17,11 @@ def astar():
             else:
                 del child
         beam.sort()
-        if len(beam) < WIDTH:
+        if len(beam) < width:
             for node in beam:
                 heapq.heappush(pqueue, node)
         else:
-            for index in range(WIDTH):
+            for index in range(width):
                 heapq.heappush(pqueue, beam[index])
 
 # check if file is supplied
@@ -40,13 +38,15 @@ elif not os.path.isfile(sys.argv[1]):
 
 # load board from file
 else:
+    width = 3
+
 
     # beam width information
     if len(sys.argv) > 2:
-        WIDTH = int(sys.argv[2])
-        print "Using beam width of %d" % WIDTH
+        width = int(sys.argv[2])
+        print "Using beam width of %d" % width
     else:
-        print "Using default beam width of %d" % WIDTH
+        print "Using default beam width of %d" % width
 
     # initialize root node
     root = rushutils.Board()
@@ -58,17 +58,28 @@ else:
     states.add(root.get_hash())
     heapq.heappush(pqueue, root)
 
+# start the timer
 start = timer()
-current = astar()
+
+# get first route to solution
+current = beamsearch(width)
+
+# stop the timer
 end = timer()
 
+# get the moves from to the winning state
 moves = []
 while current.parent is not None:
     moves.append(current.moved)
     current = current.parent
 moves.reverse()
 
+# print results
 print "\nExplored %d states in %f seconds" % (len(states), (end - start))
 print "\nSolved in %d moves" % (len(moves))
 print moves
 print
+
+# start visualisation if wanted
+if raw_input("visualisation? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)
