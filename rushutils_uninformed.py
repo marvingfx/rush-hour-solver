@@ -5,8 +5,8 @@ class Board:
     # the width of the board, used in several calculations
     width = 0
 
-    # the index of the winning tile
-    tile = 0
+    # the row of the red vehicle
+    row = 0
 
     # list that contains the identifiers of the vehicles
     vehicle_index = list()
@@ -23,16 +23,22 @@ class Board:
         :return: string of board
         """
         string = ""
-
-        for index, identifier in enumerate(self.board):
-            if index % Board.width == 0:
-                string += "\n"
-            if identifier is None:
-                string += "."
-            else:
-                string += Board.vehicle_index[identifier]
-
+        for row in self.board:
+            for value in row:
+                if value is None:
+                    string += "."
+                else:
+                    string += self.vehicle_index[value]
+            string += "\n"
         return string
+
+    def __lt__(self, other):
+        """
+        compares two Board instances on their heuristic value
+        :param other:
+        :return:
+        """
+        return self.value < other.value
 
     def get_hash(self):
         """
@@ -56,10 +62,12 @@ class Board:
         :param path: path to file
         """
         board = ""
+        self.board = []
 
         # read file
         with open(path) as file:
             for row in csv.reader(file):
+                self.board.append(row)
                 for value in row:
                     board += value
 
@@ -67,8 +75,14 @@ class Board:
         self.vehicles = list()
         values = collections.Counter(board)
 
+        # set class attributes
+        Board.width = int(math.sqrt(len(board)))
+        Board.row = int(math.floor((Board.width - 1) / 2))
+
         # get the red vehicle
-        self.vehicles.append((True, board.index('?'), board.rindex('?')))
+        self.vehicles.append((True, board.index('?') / Board.width, 
+                              board.index('?') % Board.width, 
+                              board.rindex('?') % Board.width))
         Board.vehicle_index.append('?')
         values.pop('?')
 
@@ -81,37 +95,42 @@ class Board:
 
             if not identifier == ".":
 
-                # vertical orientated vehicle
+                # vertical vehicle
                 if last - first > 2:
-                    self.vehicles.append((False, first, last))
-                # horizontal orientated vehicle
+                    self.vehicles.append((False, first % Board.width, first / Board.width, last / Board.width))
+                
+                # horizontal vehicle
                 else:
-                    self.vehicles.append((True, first, last))
+                    self.vehicles.append((True, first / Board.width, first % Board.width,  last % Board.width))
 
                 # update vehicle index
                 Board.vehicle_index.append(identifier)
 
-        # set class attributes
-        Board.width = int(math.sqrt(len(board)))
-        if Board.width % 2 == 0:
-            Board.tile = (Board.width / 2 * Board.width - 1)
-        else:
-            Board.tile = (Board.width - 1 + int(math.floor(Board.width / 2)) * Board.width)
-
-        self.board = list(board)
+        # update self.board to show the index of the vehicle instead of identifier
         for index, vehicle in enumerate(self.vehicles):
-            self.board[vehicle[1]] = index
-            self.board[vehicle[2]] = index
+            
+            # write index of horizontal vehicle
             if vehicle[0]:
-                if vehicle[2] - vehicle[1] > 1:
-                    self.board[vehicle[1] + 1] = index
+                self.board[vehicle[1]][vehicle[2]] = index
+                self.board[vehicle[1]][vehicle[3]] = index
+                if vehicle[3] - vehicle[2] > 1:
+                    self.board[vehicle[1]][vehicle[2] + 1] = index
+                    
+            # write index of vertical vehicle
             else:
-                if vehicle[2] - vehicle[1] > Board.width:
-                    self.board[vehicle[1] + Board.width] = index
+                self.board[vehicle[2]][vehicle[1]] = index
+                self.board[vehicle[3]][vehicle[1]] = index
+                if vehicle[3] - vehicle[2] > 1:
+                    self.board[vehicle[2] + 1][vehicle[1]] = index
+                    
+        # replace '.' with None
+        for row in range(Board.width):
+            for col in range(Board.width):
+                if self.board[row][col] == ".":
+                    self.board[row][col] = None
 
-        for index, value in enumerate(self.board):
-            if value == ".":
-                self.board[index] = None
+        # update Board.width, other usages all require to subtract on from Board.width
+        Board.width -= 1
 
     def get_moves(self):
         """
@@ -125,22 +144,22 @@ class Board:
             if vehicle[0]:
 
                 # check if vehicle can go backwards
-                if not vehicle[1] % Board.width == 0 and self.board[vehicle[1] - 1] is None:
+                if not vehicle[2] == 0 and self.board[vehicle[1]][vehicle[2] - 1] is None:
                     moves.append([index, -1])
 
                 # check if vehicle can go forwards
-                if not (vehicle[2] - Board.width + 1) % Board.width == 0 and self.board[vehicle[2] + 1] is None:
+                if not vehicle[3] == Board.width and self.board[vehicle[1]][vehicle[3] + 1] is None:
                     moves.append([index, 1])
 
             # vertically orientated vehicle
             else:
 
                 # check if vehicle can go upwards
-                if vehicle[1] >= Board.width and self.board[vehicle[1] - Board.width] is None:
+                if not vehicle[2] == 0 and self.board[vehicle[2] - 1][vehicle[1]] is None:
                     moves.append([index, -1])
 
                 # check if vehicle can go downwards
-                if vehicle[2] < Board.width * Board.width - Board.width and self.board[vehicle[2] + Board.width] is None:
+                if not vehicle[3] == Board.width and self.board[vehicle[3] + 1][vehicle[1]] is None:
                     moves.append([index, 1])
 
         return moves
@@ -156,33 +175,33 @@ class Board:
         # create new node
         node = Board(self, list(self.board), list(self.vehicles), (index, move))
 
-        # move horizontally orientated vehicles
-        if node.vehicles[index][0]:
+        vehicle = node.vehicles[index]
 
-            # update the board representation
+        # move horizontally orientated vehicle
+        if vehicle[0]:
+            node.board[vehicle[1]] = list(node.board[vehicle[1]])
             if move > 0:
-                node.board[node.vehicles[index][1]] = None
-                node.board[node.vehicles[index][2] + 1] = index
+                node.board[vehicle[1]][vehicle[2]] = None
+                node.board[vehicle[1]][vehicle[3] + 1] = index
             else:
-                node.board[node.vehicles[index][1] - 1] = index
-                node.board[node.vehicles[index][2]] = None
-
-            # update the vehicle
-            node.vehicles[index] = (True, node.vehicles[index][1] + move, node.vehicles[index][2] + move)
-
-        # move vertically orientated vehicles
+                node.board[vehicle[1]][vehicle[2] - 1] = index
+                node.board[vehicle[1]][vehicle[3]] = None
+        
+        # move vertically orientated vehicle
         else:
-
-            # update the board representation
             if move > 0:
-                node.board[node.vehicles[index][1]] = None
-                node.board[node.vehicles[index][2] + Board.width] = index
+                node.board[vehicle[2]] = list(node.board[vehicle[2]])
+                node.board[vehicle[3] + 1] = list(node.board[vehicle[3] + 1])
+                node.board[vehicle[2]][vehicle[1]] = None
+                node.board[vehicle[3] + 1][vehicle[1]] = index
             else:
-                node.board[node.vehicles[index][1] - Board.width] = index
-                node.board[node.vehicles[index][2]] = None
-
-            # update the vehicle
-            node.vehicles[index] = (False, node.vehicles[index][1] + move * Board.width, node.vehicles[index][2] + move * Board.width)
+                node.board[vehicle[2] - 1] = list(node.board[vehicle[2] - 1])
+                node.board[vehicle[3]] = list(node.board[vehicle[3]])
+                node.board[vehicle[2] - 1][vehicle[1]] = index
+                node.board[vehicle[3]][vehicle[1]] = None
+        
+        # update vehicle
+        node.vehicles[index] = (vehicle[0], vehicle[1], vehicle[2] + move, vehicle[3] + move)
 
         return node
 
@@ -191,4 +210,4 @@ class Board:
         checks whether the last tile is occupied by the red vehicle
         :return: boolean which indicates a win
         """
-        return self.vehicles[0][2] == Board.tile
+        return self.vehicles[0][3] == Board.width

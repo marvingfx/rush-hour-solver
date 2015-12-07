@@ -5,6 +5,7 @@ class Board:
     # the width of the board, used in several calculations
     width = 0
 
+    # the row of the red vehicle
     row = 0
 
     # list that contains the identifiers of the vehicles
@@ -81,8 +82,9 @@ class Board:
         Board.row = int(math.floor((Board.width - 1) / 2))
 
         # get the red vehicle
-
-        self.vehicles.append((True, board.index('?') / Board.width, board.index('?') % Board.width, board.rindex('?') % Board.width))
+        self.vehicles.append((True, board.index('?') / Board.width,
+                              board.index('?') % Board.width,
+                              board.rindex('?') % Board.width))
         Board.vehicle_index.append('?')
         values.pop('?')
 
@@ -95,33 +97,41 @@ class Board:
 
             if not identifier == ".":
 
-                # vertical orientated vehicle
+                # vertical vehicle
                 if last - first > 2:
                     self.vehicles.append((False, first % Board.width, first / Board.width, last / Board.width))
-                # horizontal orientated vehicle
+
+                # horizontal vehicle
                 else:
                     self.vehicles.append((True, first / Board.width, first % Board.width,  last % Board.width))
 
                 # update vehicle index
                 Board.vehicle_index.append(identifier)
 
+        # update self.board to show the index of the vehicle instead of identifier
         for index, vehicle in enumerate(self.vehicles):
+
+            # write index of horizontal vehicle
             if vehicle[0]:
                 self.board[vehicle[1]][vehicle[2]] = index
                 self.board[vehicle[1]][vehicle[3]] = index
                 if vehicle[3] - vehicle[2] > 1:
                     self.board[vehicle[1]][vehicle[2] + 1] = index
+
+            # write index of vertical vehicle
             else:
                 self.board[vehicle[2]][vehicle[1]] = index
                 self.board[vehicle[3]][vehicle[1]] = index
                 if vehicle[3] - vehicle[2] > 1:
                     self.board[vehicle[2] + 1][vehicle[1]] = index
 
+        # replace '.' with None
         for row in range(Board.width):
             for col in range(Board.width):
                 if self.board[row][col] == ".":
                     self.board[row][col] = None
 
+        # update Board.width, other usages all require to subtract on from Board.width
         Board.width -= 1
 
     def get_cost_estimate(self):
@@ -234,7 +244,7 @@ class Board:
 
         vehicle = node.vehicles[index]
 
-        # move horizontally orientated vehicles
+        # move horizontally orientated vehicle
         if vehicle[0]:
             node.board[vehicle[1]] = list(node.board[vehicle[1]])
             if move > 0:
@@ -244,6 +254,7 @@ class Board:
                 node.board[vehicle[1]][vehicle[2] - 1] = index
                 node.board[vehicle[1]][vehicle[3]] = None
 
+        # move vertically orientated vehicle
         else:
             if move > 0:
                 node.board[vehicle[2]] = list(node.board[vehicle[2]])
@@ -256,7 +267,10 @@ class Board:
                 node.board[vehicle[2] - 1][vehicle[1]] = index
                 node.board[vehicle[3]][vehicle[1]] = None
 
+        # update vehicle
         node.vehicles[index] = (vehicle[0], vehicle[1], vehicle[2] + move, vehicle[3] + move)
+
+        # get the cost estimate
         node.value = node.get_cost_estimate()
 
         return node
