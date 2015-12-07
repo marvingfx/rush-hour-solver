@@ -1,14 +1,9 @@
-import sys, rushutils, os.path, collections
+import sys, rushutils, os.path, collections, visualisation
 from timeit import default_timer as timer
 
 
-def iterative_deepening(root):
-    states = dict()
-    stack = collections.deque()
-    next = collections.deque()
+def iterative_deepening():
     max_depth = 0
-    stack.append(root)
-    states[root.get_hash()] = root.depth
 
     while len(stack) > 0:
         node = stack.popleft()
@@ -17,32 +12,19 @@ def iterative_deepening(root):
                 child = node.move(move[0], move[1])
                 if child.win():
                     return child
-                if not states.__contains__(child.get_hash):
+                if not states.__contains__(child.get_hash()):
                     states[child.get_hash()] = child.depth
                     stack.appendleft(child)
-
-        else:
-            next.appendleft(node)
+                else:
+                    if states[child.get_hash()] > child.depth:
+                        states[child.get_hash()] = child.depth
+                        stack.appendleft(child)
 
         if len(stack) == 0:
-            stack.extendleft(next)
-            next.clear()
+            stack.append(root)
+            states.clear()
+            states[root.get_hash()] = 0
             max_depth += 1
-
-
-
-
-
-def depth_first_search(node):
-    if node.win():
-        return node
-    for move in node.get_moves():
-        child = node.move(move[0], move[1])
-        if child.get_hash() not in states:
-            states.add(node.get_hash())
-            test = depth_first_search(child)
-            if test:
-                return test
 
 
 # check if file is supplied
@@ -65,30 +47,35 @@ else:
     root.load_from_file(sys.argv[1])
 
     # initialize queue and states archive
-    # states = set()
-    # states.add(root.get_hash())
+    states = dict()
+    states[root.get_hash()] = 0
+    stack = collections.deque()
+    stack.append(root)
 
-    sys.setrecursionlimit(100000)
 
 # start the timer
 start = timer()
 
 # get first route to solution
-current = iterative_deepening(root)
+current = iterative_deepening()
 
 # stop the timer
 end = timer()
 
 
 # get the moves from to the winning state
-
-moves = collections.deque()
+moves = []
 while current.parent is not None:
-    moves.appendleft(current.moved)
+    moves.append(current.moved)
     current = current.parent
-
-print len(moves)
+moves.reverse()
 
 # print results
-print "\nSolved in the time of %f seconds" % (end - start)
+print "\nExplored %d states in %f seconds" % (len(states), (end - start))
+print "\nSolved in %d moves" % (len(moves))
+print moves
 print
+
+# start visualisation if wanted
+if raw_input("visualisation? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)
