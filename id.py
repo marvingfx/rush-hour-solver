@@ -4,6 +4,7 @@ from timeit import default_timer as timer
 
 def iterative_deepening():
     max_depth = 0
+    open = list()
 
     while len(stack) > 0:
         node = stack.popleft()
@@ -19,11 +20,12 @@ def iterative_deepening():
                     if states[child.get_hash()] > child.depth:
                         states[child.get_hash()] = child.depth
                         stack.appendleft(child)
+        else:
+            open.append(node)
 
         if len(stack) == 0:
-            stack.append(root)
-            states.clear()
-            states[root.get_hash()] = 0
+            stack.extendleft(open)
+            open = list()
             max_depth += 1
 
 
