@@ -15,6 +15,9 @@ Larger boards (9x9, 12x12) may require the algorithms to run for several hours
 
 ###Breadth First Search
     python bfsearch.py boards/board.txt
+    
+###Iterative Deepening
+	python id.py boards/board.txt
 
 ###A* Search
     python astar.py boards/board.txt
