@@ -1,6 +1,6 @@
 a,.,.,.,.,.,b,c,c,c,d,d
-a,.,.,.,.,d,b,.,.,.,e,f
-g,g,g,h,h,d,i,j,j,.,e,f
+a,.,.,.,.,R,b,.,.,.,e,f
+g,g,g,h,h,R,i,j,j,.,e,f
 k,l,.,.,.,m,i,n,n,o,o,.
 k,l,p,p,p,m,i,q,q,q,.,.
 k,l,?,?,s,t,.,.,.,.,.,.
