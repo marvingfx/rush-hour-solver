@@ -1,10 +1,10 @@
-import sys, rushutils, os.path, heapq, visualisation
+import sys, rushutils, os.path, visualisation
 from timeit import default_timer as timer
 
 
 def beamsearch(width):
-    while len(pqueue) > 0:
-        node = heapq.heappop(pqueue)
+    while len(queue) > 0:
+        node = queue.pop(0)
         beam = list()
         for move in node.get_moves():
             child = node.move(move[0], move[1])
@@ -12,17 +12,16 @@ def beamsearch(width):
                 if child.win():
                     return child
             if child.get_hash() not in states:
-                states.add(child.get_hash())
                 beam.append(child)
             else:
                 del child
         beam.sort()
-        if len(beam) < width:
-            for node in beam:
-                heapq.heappush(pqueue, node)
-        else:
-            for index in range(width):
-                heapq.heappush(pqueue, beam[index])
+        for i, node in enumerate(beam):
+            if i < width:
+                states.add(node.get_hash())
+                queue.append(node)
+            else:
+                del node
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -54,9 +53,9 @@ else:
 
     # initialize priority queue and states archive
     states = set()
-    pqueue = list()
+    queue = list()
     states.add(root.get_hash())
-    heapq.heappush(pqueue, root)
+    queue.append(root)
 
 # start the timer
 start = timer()
