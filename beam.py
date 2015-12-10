@@ -20,8 +20,6 @@ def beamsearch(width):
             if i < width:
                 states.add(node.get_hash())
                 queue.append(node)
-            else:
-                del node
 
 # check if file is supplied
 if len(sys.argv) <= 1:
