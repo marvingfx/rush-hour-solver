@@ -3,16 +3,16 @@ from timeit import default_timer as timer
 
 
 def astar():
-    while len(pqueue) > 0:
+    while len(pqueue):
         node = heapq.heappop(pqueue)
         for move in node.get_moves():
             child = node.move(move[0], move[1])
+            if child.get_hash() not in states:
+                states[child.get_hash()] = [node.vehicles, move]
+                heapq.heappush(pqueue, child)
             if move[0] == 0:
                 if child.win():
-                    return child
-            if child.get_hash() not in states:
-                states.add(child.get_hash())
-                heapq.heappush(pqueue, child)
+                    return child.get_hash()
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -34,25 +34,25 @@ else:
     root.load_from_file(sys.argv[1])
 
     # initialize priority queue and states archive
-    states = set()
+    states = dict()
     pqueue = list()
-    states.add(root.get_hash())
+    states[root.get_hash()] = None
     heapq.heappush(pqueue, root)
 
 # start the timer
 start = timer()
 
 # get first route to solution
-current = astar()
+hash = astar()
 
 # stop the timer
 end = timer()
 
 # get the moves from to the winning state
 moves = []
-while current.parent is not None:
-    moves.append(current.moved)
-    current = current.parent
+while states[hash] is not None:
+    moves.append(states[hash][1])
+    hash = tuple(states[hash][0])
 moves.reverse()
 
 # print results
