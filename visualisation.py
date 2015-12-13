@@ -5,7 +5,7 @@ from collections import Counter
 
 class Visualisation:
     def __init__(self, root, solution, tile=80):
-        self.vehicles = root.vehicles
+        self.vehicles = list(root.vehicles)
         self.solution = solution
         self.tile = tile
         self.width = (root.width + 1) * self.tile
