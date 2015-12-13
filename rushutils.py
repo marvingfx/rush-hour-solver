@@ -1,4 +1,4 @@
-import csv, collections, math
+import csv, collections, math, datetime
 
 
 class Board:
@@ -7,6 +7,8 @@ class Board:
 
     # the row of the red vehicle
     row = 0
+
+    maxd = 0
 
     # list that contains the identifiers of the vehicles
     vehicle_index = list()
@@ -271,6 +273,11 @@ class Board:
 
         # get the cost estimate
         node.value = node.get_cost_estimate()
+
+        if node.depth > Board.maxd:
+            Board.maxd = node.depth
+            print "Current max depth: %d" % Board.maxd
+            print datetime.datetime.now()
 
         return node
 
