@@ -1,15 +1,29 @@
-import sys, rushutils, os.path, heapq
+import sys, rushutils, os.path, heapq, visualisation
 from timeit import default_timer as timer
 
-@profile
+
 def astar():
+    """
+    calculates one optimal path to a winning state by applying an admissable heuristic
+    :return: a winning node if a solution is found, or nothing if board is unsolvable
+    """
     while len(pqueue):
+
+        # get the node with the lowest cost estimate
         node = heapq.heappop(pqueue)
+
+        # generate all possible children
         for move in node.get_moves():
             child = node.move(move[0], move[1])
-            if child not in states:
-                states[child] = [node.vehicles, move]
+
+            # check if child has already been processed
+            if child not in closed:
+
+                # add child to closed list and to the priority queue
+                closed[child] = [node.vehicles, move]
                 heapq.heappush(pqueue, child)
+
+            # check if current child is a solution
             if move[0] == 0:
                 if child.win():
                     return child
@@ -33,31 +47,34 @@ else:
     root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
-    # initialize priority queue and states archive
-    states = dict()
+    # initialize priority queue and closed archive
+    closed = dict()
+    closed[root] = None
     pqueue = list()
-    states[root] = None
     heapq.heappush(pqueue, root)
 
 # start the timer
 start = timer()
 
 # get first route to solution
-hash = astar()
+node = astar()
 
 # stop the timer
 end = timer()
 
-# get the moves from to the winning state
+# get the moves to the winning node
 moves = []
-while states[hash] is not None:
-    moves.append(states[hash][1])
-    hash = tuple(states[hash][0])
+while closed[node] is not None:
+    moves.append(closed[node][1])
+    node = tuple(closed[node][0])
 moves.reverse()
 
 # print results
-print "\nExplored %d states in %f seconds" % (len(states), (end - start))
+print "\nExplored %d states in %f seconds" % (len(closed), (end - start))
 print "\nSolved in %d moves" % (len(moves))
 print moves
 print
 
+# start visualisation if wanted
+if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)

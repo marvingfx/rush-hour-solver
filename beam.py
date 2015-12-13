@@ -1,23 +1,42 @@
-import sys, rushutils, os.path
+import sys, rushutils, os.path, visualisation
 from timeit import default_timer as timer
 
 
 def beamsearch(width):
-    while len(queue) > 0:
+    """
+    calculates one  path to a winning state
+    :param width: width of the beam
+    :return: a winning node if a solution is found, or nothing if board is unsolvable
+    """
+    while len(queue):
+
+        # get the first node from the queue
         node = queue.pop(0)
+
+        # initialize beam
         beam = list()
+
+        # generate all possible children
         for move in node.get_moves():
             child = node.move(move[0], move[1])
+
+            # check if current child is a solution
             if move[0] == 0:
                 if child.win():
-                    states[child] = [node.vehicles, child.moved]
+                    closed[child] = [node.vehicles, child.moved]
                     return child
-            if child not in states:
+
+            # add child to beam if not processed already
+            if child not in closed:
                 beam.append(child)
+
+        # sort the beam so that the most promising members are in front
         beam.sort()
+
+        # add n children to the queue
         for i, child in enumerate(beam):
             if i < width:
-                states[child] = [node.vehicles, child.moved]
+                closed[child] = [node.vehicles, child.moved]
                 queue.append(child)
 
 # check if file is supplied
@@ -48,34 +67,34 @@ else:
     root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
-    # initialize priority queue and states archive
-    states = dict()
+    # initialize queue and closed archive
+    closed = dict()
+    closed[root] = None
     queue = list()
-    states[root] = None
     queue.append(root)
 
 # start the timer
 start = timer()
 
 # get first route to solution
-hash = beamsearch(width)
+node = beamsearch(width)
 
 # stop the timer
 end = timer()
 
 # get the moves from to the winning state
 moves = []
-while states[hash] is not None:
-    moves.append(states[hash][1])
-    hash = tuple(states[hash][0])
+while closed[node] is not None:
+    moves.append(closed[node][1])
+    node = tuple(closed[node][0])
 moves.reverse()
 
 # print results
-print "\nExplored %d states in %f seconds" % (len(states), (end - start))
+print "\nExplored %d states in %f seconds" % (len(closed), (end - start))
 print "\nSolved in %d moves" % (len(moves))
 print moves
 print
 
-# # start visualisation if wanted
-# if raw_input("visualisation? (Y/N): ").lower() == 'y':
-#     vis = visualisation.Visualisation(root, moves)
+# start visualisation if wanted
+if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)

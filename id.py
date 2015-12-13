@@ -3,29 +3,51 @@ from timeit import default_timer as timer
 
 
 def iterative_deepening():
+    """
+    calculates one optimal path to a winning state
+    :return: a winning node if a solution is found, or nothing if board is unsolvable
+    """
     max_depth = 0
-    open = list()
+    open_list = list()
 
-    while len(stack) > 0:
+    while len(stack):
+
+        # get the first node from the stack
         node = stack.popleft()
+
+        # generate all possible children if the depth of the node is below the maximum depth
         if node.depth < max_depth:
             for move in node.get_moves():
                 child = node.move(move[0], move[1])
-                if child.win():
-                    return child
-                if not states.__contains__(child.get_hash()):
-                    states[child.get_hash()] = child.depth
-                    stack.appendleft(child)
-                else:
-                    if states[child.get_hash()] > child.depth:
-                        states[child.get_hash()] = child.depth
-                        stack.appendleft(child)
-        else:
-            open.append(node)
 
+                # check if child has already been processed
+                if child not in closed:
+
+                    # add child to closed list and to the stack
+                    closed[child] = [node, move, child.depth]
+                    stack.appendleft(child)
+
+                    # check if current child is a solution
+                    if move[0] == 0:
+                        if child.win():
+                            return child
+
+                # check if the depth of the current node is lower than the initial node
+                else:
+                    if closed[child][2] > child.depth:
+
+                        # update closed list and add child to the stack
+                        closed[child] = [node, move, child.depth]
+                        stack.appendleft(child)
+
+        # save nodes that exceed the depth so that the entire tree does not need to be traversed once again
+        else:
+            open_list.append(node)
+
+        # continue search with the nodes saved in the open list and increase the maximum depth
         if len(stack) == 0:
-            stack.extendleft(open)
-            open = list()
+            stack.extendleft(open_list)
+            open_list = list()
             max_depth += 1
 
 
@@ -45,12 +67,12 @@ elif not os.path.isfile(sys.argv[1]):
 else:
 
     # initialize root node
-    root = rushutils.Board(None, None, None, None)
+    root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
-    # initialize queue and states archive
-    states = dict()
-    states[root.get_hash()] = 0
+    # initialize queue and closed archive
+    closed = dict()
+    closed[root] = [None, None, 0]
     stack = collections.deque()
     stack.append(root)
 
@@ -59,25 +81,25 @@ else:
 start = timer()
 
 # get first route to solution
-current = iterative_deepening()
+node = iterative_deepening()
 
 # stop the timer
 end = timer()
 
 
-# get the moves from to the winning state
+# get the moves to the winning state
 moves = []
-while current.parent is not None:
-    moves.append(current.moved)
-    current = current.parent
+while closed[node][0] is not None:
+    moves.append(closed[node][1])
+    node = (closed[node][0])
 moves.reverse()
 
 # print results
-print "\nExplored %d states in %f seconds" % (len(states), (end - start))
+print "\nExplored %d states in %f seconds" % (len(closed), (end - start))
 print "\nSolved in %d moves" % (len(moves))
 print moves
 print
 
 # start visualisation if wanted
-if raw_input("visualisation? (Y/N): ").lower() == 'y':
+if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
     vis = visualisation.Visualisation(root, moves)

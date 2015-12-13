@@ -39,22 +39,19 @@ class Board:
         :return:
         """
         return self.value < other.value
+    #
+    # def get_hash(self):
+    #     """
+    #     gets a hashable value
+    #     :return: tuple of self.vehicles
+    #     """
+    #     return tuple(self.vehicles)
 
-    def get_hash(self):
-        """
-        gets a hashable value
-        :return: tuple of self.vehicles
-        """
-        return tuple(self.vehicles)
-
-    """ may be implemented later
     def __hash__(self):
         return hash(tuple(self.vehicles))
 
     def __eq__(self, other):
-        return self.vehicles == other.vehicles
-
-    """
+        return self.vehicles == other
 
     def load_from_file(self, path):
         """
@@ -131,6 +128,7 @@ class Board:
 
         # update Board.width, other usages all require to subtract on from Board.width
         Board.width -= 1
+        self.vehicles = tuple(self.vehicles)
 
     def get_moves(self):
         """
@@ -202,6 +200,7 @@ class Board:
         
         # update vehicle
         node.vehicles[index] = (vehicle[0], vehicle[1], vehicle[2] + move, vehicle[3] + move)
+        node.vehicles = tuple(node.vehicles)
 
         return node
 
