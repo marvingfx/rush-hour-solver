@@ -10,14 +10,14 @@ def beamsearch(width):
             child = node.move(move[0], move[1])
             if move[0] == 0:
                 if child.win():
-                    states[child.get_hash()] = [node.vehicles, child.moved]
-                    return child.get_hash()
-            if child.get_hash() not in states:
+                    states[child] = [node.vehicles, child.moved]
+                    return child
+            if child not in states:
                 beam.append(child)
         beam.sort()
         for i, child in enumerate(beam):
             if i < width:
-                states[child.get_hash()] = [node.vehicles, child.moved]
+                states[child] = [node.vehicles, child.moved]
                 queue.append(child)
 
 # check if file is supplied
@@ -51,7 +51,7 @@ else:
     # initialize priority queue and states archive
     states = dict()
     queue = list()
-    states[root.get_hash()] = None
+    states[root] = None
     queue.append(root)
 
 # start the timer

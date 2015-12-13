@@ -8,8 +8,6 @@ class Board:
     # the row of the red vehicle
     row = 0
 
-    maxd = 0
-
     # list that contains the identifiers of the vehicles
     vehicle_index = list()
 
@@ -43,21 +41,11 @@ class Board:
         """
         return self.value < other.value
 
-    def get_hash(self):
-        """
-        gets a hashable value
-        :return: tuple of self.vehicles
-        """
-        return tuple(self.vehicles)
-
-    """ may be implemented later
     def __hash__(self):
-        return hash(tuple(self.vehicles))
+        return hash(self.vehicles)
 
     def __eq__(self, other):
-        return self.vehicles == other.vehicles
-
-    """
+        return self.vehicles == other
 
     def load_from_file(self, path):
         """
@@ -134,6 +122,7 @@ class Board:
 
         # update Board.width, other usages all require to subtract on from Board.width
         Board.width -= 1
+        self.vehicles = tuple(self.vehicles)
 
     def get_cost_estimate(self):
         """
@@ -270,14 +259,10 @@ class Board:
 
         # update vehicle
         node.vehicles[index] = (vehicle[0], vehicle[1], vehicle[2] + move, vehicle[3] + move)
+        node.vehicles = tuple(node.vehicles)
 
         # get the cost estimate
         node.value = node.get_cost_estimate()
-
-        if node.depth > Board.maxd:
-            Board.maxd = node.depth
-            print "Current max depth: %d" % Board.maxd
-            print datetime.datetime.now()
 
         return node
 
