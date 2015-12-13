@@ -1,4 +1,4 @@
-import sys, rushutils, os.path, heapq, visualisation
+import sys, rushutils, os.path, heapq
 from timeit import default_timer as timer
 
 
@@ -61,6 +61,3 @@ print "\nSolved in %d moves" % (len(moves))
 print moves
 print
 
-# start visualisation if wanted
-if raw_input("visualisation? (Y/N): ").lower() == 'y':
-    vis = visualisation.Visualisation(root, moves)
