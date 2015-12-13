@@ -1,4 +1,4 @@
-import sys, rushutils, os.path, visualisation
+import sys, rushutils, os.path
 from timeit import default_timer as timer
 
 
@@ -10,16 +10,15 @@ def beamsearch(width):
             child = node.move(move[0], move[1])
             if move[0] == 0:
                 if child.win():
-                    return child
+                    states[child.get_hash()] = [node.vehicles, child.moved]
+                    return child.get_hash()
             if child.get_hash() not in states:
                 beam.append(child)
-            else:
-                del child
         beam.sort()
-        for i, node in enumerate(beam):
+        for i, child in enumerate(beam):
             if i < width:
-                states.add(node.get_hash())
-                queue.append(node)
+                states[child.get_hash()] = [node.vehicles, child.moved]
+                queue.append(child)
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -50,25 +49,25 @@ else:
     root.load_from_file(sys.argv[1])
 
     # initialize priority queue and states archive
-    states = set()
+    states = dict()
     queue = list()
-    states.add(root.get_hash())
+    states[root.get_hash()] = None
     queue.append(root)
 
 # start the timer
 start = timer()
 
 # get first route to solution
-current = beamsearch(width)
+hash = beamsearch(width)
 
 # stop the timer
 end = timer()
 
 # get the moves from to the winning state
 moves = []
-while current.parent is not None:
-    moves.append(current.moved)
-    current = current.parent
+while states[hash] is not None:
+    moves.append(states[hash][1])
+    hash = tuple(states[hash][0])
 moves.reverse()
 
 # print results
@@ -77,6 +76,6 @@ print "\nSolved in %d moves" % (len(moves))
 print moves
 print
 
-# start visualisation if wanted
-if raw_input("visualisation? (Y/N): ").lower() == 'y':
-    vis = visualisation.Visualisation(root, moves)
+# # start visualisation if wanted
+# if raw_input("visualisation? (Y/N): ").lower() == 'y':
+#     vis = visualisation.Visualisation(root, moves)
