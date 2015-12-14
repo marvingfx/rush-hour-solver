@@ -1,4 +1,4 @@
-import csv, collections, math, datetime
+import csv, collections, math
 
 
 class Board:
@@ -120,7 +120,7 @@ class Board:
                 if self.board[row][col] == ".":
                     self.board[row][col] = None
 
-        # update Board.width, other usages all require to subtract on from Board.width
+        # update Board.width, other usages all require to subtract one from Board.width
         Board.width -= 1
         self.vehicles = tuple(self.vehicles)
 
@@ -155,7 +155,7 @@ class Board:
 
     def get_additional_steps(self):
         """
-        gets a minimum number of steps to be completed
+        gets a minimum number of steps that need to be taken
         :return: minimum number of steps
         """
         steps = 0
@@ -167,18 +167,38 @@ class Board:
             if index:
                 vehicle = self.vehicles[index]
 
-                # center tile of long vehicle in path of red vehicle
+                # center tile of long vehicle in path of red vehicle (1st level blocker)
                 if vehicle[2] < self.vehicles[0][1] < vehicle[3]:
                     steps += 2
 
-                # either long or short vehicle in path of red vehicle
+                    # check if 1st level blocker is blocked on both sides (2nd level blocker)
+                    if self.is_blocked(index):
+                        steps += 1
+
+                        # check if 2nd level blocker is blocked on both sides (3d level blocker)
+                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
+                            steps += 1
+
+                # either long or short vehicle in path of red vehicle (1st level blocker)
                 else:
                     steps += 1
 
-                if self.is_blocked(index):
-                    steps += 1
-                    if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
+                    # check if 1st level blocker is blocked on both sides (2nd level blocker)
+                    if self.is_blocked(index):
                         steps += 1
+
+                        # check if 2nd level blocker is blocked on both sides (3d level blocker)
+                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
+                            steps += 1
+
+                    # check if 1st level blocker's shortest route is blocked (2nd level blocker)
+                    elif vehicle[2] == self.vehicles[0][1]:
+                        if self.board[vehicle[3] + 2][vehicle[1]]:
+                            steps += 1
+
+                    # check if 1st level blocker's shortest route is blocked (2nd level blocker)
+                    elif self.board[vehicle[2] - 2][vehicle[1]]:
+                            steps += 1
 
         return steps
 
@@ -236,7 +256,10 @@ class Board:
 
         # move horizontally orientated vehicle
         if vehicle[0]:
+
+            # generate new row for board
             node.board[vehicle[1]] = list(node.board[vehicle[1]])
+
             if move > 0:
                 node.board[vehicle[1]][vehicle[2]] = None
                 node.board[vehicle[1]][vehicle[3] + 1] = index
@@ -247,13 +270,19 @@ class Board:
         # move vertically orientated vehicle
         else:
             if move > 0:
+
+                # generate new rows for board
                 node.board[vehicle[2]] = list(node.board[vehicle[2]])
                 node.board[vehicle[3] + 1] = list(node.board[vehicle[3] + 1])
+
                 node.board[vehicle[2]][vehicle[1]] = None
                 node.board[vehicle[3] + 1][vehicle[1]] = index
             else:
+
+                # generate new rows for board
                 node.board[vehicle[2] - 1] = list(node.board[vehicle[2] - 1])
                 node.board[vehicle[3]] = list(node.board[vehicle[3]])
+
                 node.board[vehicle[2] - 1][vehicle[1]] = index
                 node.board[vehicle[3]][vehicle[1]] = None
 
