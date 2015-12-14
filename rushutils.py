@@ -142,14 +142,18 @@ class Board:
             return False
         vehicle = self.vehicles[index]
         if vehicle[0]:
-            if vehicle[2] == 0 or self.board[vehicle[1]][vehicle[2] - 1] is not None:
+            if vehicle[2] == 0 and self.board[vehicle[1]][vehicle[2] - 1]:
                 return True
-            elif vehicle[3] == Board.width or self.board[vehicle[1]][vehicle[3] + 1] is not None:
+            elif vehicle[3] == Board.width and self.board[vehicle[1]][vehicle[2] - 1]:
+                return True
+            elif self.board[vehicle[1]][vehicle[2] - 1] and self.board[vehicle[1]][vehicle[3] + 1]:
                 return True
         else:
-            if vehicle[2] == 0 or self.board[vehicle[2] - 1][vehicle[1]]:
+            if vehicle[2] == 0 and self.board[vehicle[3] + 1][vehicle[1]]:
                 return True
-            elif vehicle[3] == Board.width or self.board[vehicle[3] + 1][vehicle[1]] is not None:
+            elif vehicle[3] == Board.width and self.board[vehicle[2] - 1][vehicle[1]]:
+                return True
+            elif self.board[vehicle[2] - 1][vehicle[1]] and self.board[vehicle[3] + 1][vehicle[1]]:
                 return True
         return False
 
@@ -193,12 +197,12 @@ class Board:
 
                     # check if 1st level blocker's shortest route is blocked (2nd level blocker)
                     elif vehicle[2] == self.vehicles[0][1]:
-                        if self.board[vehicle[3] + 2][vehicle[1]]:
+                        if self.board[vehicle[3] + 1][vehicle[1]]:
                             steps += 1
 
                     # check if 1st level blocker's shortest route is blocked (2nd level blocker)
-                    elif self.board[vehicle[2] - 2][vehicle[1]]:
-                            steps += 1
+                    elif self.board[vehicle[2] - 1][vehicle[1]]:
+                        steps += 1
 
         return steps
 
