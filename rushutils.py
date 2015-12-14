@@ -197,12 +197,17 @@ class Board:
 
                     # check if 1st level blocker's shortest route is blocked (2nd level blocker)
                     elif vehicle[2] == self.vehicles[0][1]:
-                        if self.board[vehicle[3] + 1][vehicle[1]]:
+                        if self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]) and self.board[vehicle[2] - 2][vehicle[1]]:
+                            steps += 1
+                        elif self.board[vehicle[3] + 1][vehicle[1]]:
                             steps += 1
 
                     # check if 1st level blocker's shortest route is blocked (2nd level blocker)
-                    elif self.board[vehicle[2] - 1][vehicle[1]]:
-                        steps += 1
+                    else:
+                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.board[vehicle[3] + 2][vehicle[1]]:
+                            steps += 1
+                        elif self.board[vehicle[2] - 1][vehicle[1]]:
+                            steps += 1
 
         return steps
 
