@@ -8,7 +8,7 @@ class Board:
     # the row of the red vehicle
     row = 0
 
-    # list that contains the identifiers of the vehicles
+    # list that contains the identifiers of the vehicles, used to print a node
     vehicle_index = list()
 
     def __init__(self, board=None, vehicles=None, moved=None, depth=0, value=None):
@@ -20,10 +20,12 @@ class Board:
 
     def __str__(self):
         """
-        returns a string of the board
+        returns a string representation of the board
         :return: string of board
         """
         string = ""
+
+        # transform matrix into string
         for row in self.board:
             for value in row:
                 if value is None:
@@ -31,21 +33,25 @@ class Board:
                 else:
                     string += self.vehicle_index[value]
             string += "\n"
+
         return string
 
     def __lt__(self, other):
         """
-        compares two Board instances on their heuristic value
+        compares two Board instances on their cost
         :param other:
         :return:
         """
         return self.value < other.value
 
-    def __hash__(self):
-        return hash(self.vehicles)
-
-    def __eq__(self, other):
-        return self.vehicles == other
+    def get_hash(self):
+        """
+        gets a value that is used to save nodes
+        __hash__ will store a reference to a tuple/board while get_hash() will store the actual tuple, which in turn
+        leads to less memory usage
+        :return self.vehicles (tuple):
+        """
+        return self.vehicles
 
     def load_from_file(self, path):
         """
@@ -55,29 +61,31 @@ class Board:
         board = ""
         self.board = []
 
-        # read file
+        # read file and populate matrix
         with open(path) as file:
             for row in csv.reader(file):
                 self.board.append(row)
                 for value in row:
                     board += value
 
-        # load vehicles
-        self.vehicles = list()
-        values = collections.Counter(board)
-
         # set class attributes
         Board.width = int(math.sqrt(len(board)))
         Board.row = int(math.floor((Board.width - 1) / 2))
 
-        # get the red vehicle
+        # get the vehicles from the string
+        self.vehicles = list()
+        values = collections.Counter(board)
+
+        # add main vehicle to self.vehicles
         self.vehicles.append((True, board.index('?') / Board.width,
                               board.index('?') % Board.width,
                               board.rindex('?') % Board.width))
+
+        # add main vehicle identifier to Board.vehicle_index
         Board.vehicle_index.append('?')
         values.pop('?')
 
-        # get other vehicles
+        # add other vehicles to self.vehicles
         for identifier in values:
 
             # get the first and last occurrence of identifier in string
@@ -86,28 +94,31 @@ class Board:
 
             if not identifier == ".":
 
-                # vertical vehicle
+                # vertical vehicle: (vertical, column, first row, last row)
                 if last - first > 2:
                     self.vehicles.append((False, first % Board.width, first / Board.width, last / Board.width))
 
-                # horizontal vehicle
+                # horizontal vehicle: (horizontal, row, first column, last column)
                 else:
                     self.vehicles.append((True, first / Board.width, first % Board.width,  last % Board.width))
 
-                # update vehicle index
+                # add vehicle to Board.vehicle_index
                 Board.vehicle_index.append(identifier)
 
-        # update self.board to show the index of the vehicle instead of identifier
+        # transform list to tuple for hashing
+        self.vehicles = tuple(self.vehicles)
+
+        # update self.board to use the index of the vehicle instead of identifier
         for index, vehicle in enumerate(self.vehicles):
 
-            # write index of horizontal vehicle
+            # write indexes of horizontal vehicle
             if vehicle[0]:
                 self.board[vehicle[1]][vehicle[2]] = index
                 self.board[vehicle[1]][vehicle[3]] = index
                 if vehicle[3] - vehicle[2] > 1:
                     self.board[vehicle[1]][vehicle[2] + 1] = index
 
-            # write index of vertical vehicle
+            # write indexes of vertical vehicle
             else:
                 self.board[vehicle[2]][vehicle[1]] = index
                 self.board[vehicle[3]][vehicle[1]] = index
@@ -122,106 +133,18 @@ class Board:
 
         # update Board.width, other usages all require to subtract one from Board.width
         Board.width -= 1
-        self.vehicles = tuple(self.vehicles)
 
-    def get_cost_estimate(self):
+    def win(self):
         """
-        gets a cost estimate of the completion of the board
-        :return: cost estimate
+        checks whether the last tile is occupied by the red vehicle
+        :return: boolean which indicates a win
         """
-        return self.depth + self.get_min_distance() + self.get_additional_steps() + self.get_priority()
-
-    def get_priority(self):
-        if self.moved[0] == 0:
-            return -1
-        else:
-            return 0
-
-    def is_blocked(self, index):
-        if not index:
-            return False
-        vehicle = self.vehicles[index]
-        if vehicle[0]:
-            if vehicle[2] == 0 and self.board[vehicle[1]][vehicle[2] - 1]:
-                return True
-            elif vehicle[3] == Board.width and self.board[vehicle[1]][vehicle[2] - 1]:
-                return True
-            elif self.board[vehicle[1]][vehicle[2] - 1] and self.board[vehicle[1]][vehicle[3] + 1]:
-                return True
-        else:
-            if vehicle[2] == 0 and self.board[vehicle[3] + 1][vehicle[1]]:
-                return True
-            elif vehicle[3] == Board.width and self.board[vehicle[2] - 1][vehicle[1]]:
-                return True
-            elif self.board[vehicle[2] - 1][vehicle[1]] and self.board[vehicle[3] + 1][vehicle[1]]:
-                return True
-        return False
-
-    def get_additional_steps(self):
-        """
-        gets a minimum number of steps that need to be taken
-        :return: minimum number of steps
-        """
-        steps = 0
-        origin = self.vehicles[0][3]
-
-        # check for vehicles in the direct path of the red vehicle
-        for i in range(1, self.get_min_distance() + 1):
-            index = self.board[Board.row][origin + i]
-            if index:
-                vehicle = self.vehicles[index]
-
-                # center tile of long vehicle in path of red vehicle (1st level blocker)
-                if vehicle[2] < self.vehicles[0][1] < vehicle[3]:
-                    steps += 2
-
-                    # check if 1st level blocker is blocked on both sides (2nd level blocker)
-                    if self.is_blocked(index):
-                        steps += 1
-
-                        # check if 2nd level blocker is blocked on both sides (3d level blocker)
-                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
-                            steps += 1
-
-                # either long or short vehicle in path of red vehicle (1st level blocker)
-                else:
-                    steps += 1
-
-                    # check if 1st level blocker is blocked on both sides (2nd level blocker)
-                    if self.is_blocked(index):
-                        steps += 1
-
-                        # check if 2nd level blocker is blocked on both sides (3d level blocker)
-                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
-                            steps += 1
-
-                    # check if 1st level blocker's shortest route is blocked (2nd level blocker)
-                    elif vehicle[2] == self.vehicles[0][1]:
-                        if self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]) and self.board[vehicle[2] - 2][vehicle[1]]:
-                            steps += 2
-                        elif self.board[vehicle[3] + 1][vehicle[1]]:
-                            steps += 1
-
-                    # check if 1st level blocker's shortest route is blocked (2nd level blocker)
-                    else:
-                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.board[vehicle[3] + 2][vehicle[1]]:
-                            steps += 2
-                        elif self.board[vehicle[2] - 1][vehicle[1]]:
-                            steps += 1
-
-        return steps
-
-    def get_min_distance(self):
-        """
-        gets the minimum distance that has to be covered by the red vehicle
-        :return: minimum steps
-        """
-        return Board.width - self.vehicles[0][3]
+        return self.vehicles[0][3] == Board.width
 
     def get_moves(self):
         """
         checks which vehicles can move
-        :return: array with possible moves
+        :return: array with all possible moves
         """
         moves = []
         for index, vehicle in enumerate(self.vehicles):
@@ -261,6 +184,7 @@ class Board:
         # create new node
         node = Board(list(self.board), list(self.vehicles), (index, move), self.depth + 1)
 
+        # get the vehicle that needs to be moved
         vehicle = node.vehicles[index]
 
         # move horizontally orientated vehicle
@@ -295,18 +219,116 @@ class Board:
                 node.board[vehicle[2] - 1][vehicle[1]] = index
                 node.board[vehicle[3]][vehicle[1]] = None
 
-        # update vehicle
+        # update node.vehicles
         node.vehicles[index] = (vehicle[0], vehicle[1], vehicle[2] + move, vehicle[3] + move)
         node.vehicles = tuple(node.vehicles)
 
-        # get the cost estimate
+        # calculate the cost estimate
         node.value = node.get_cost_estimate()
 
         return node
 
-    def win(self):
+    def get_cost_estimate(self):
         """
-        checks whether the last tile is occupied by the red vehicle
-        :return: boolean which indicates a win
+        gets a cost estimate of the completion of the board
+        :return: cost estimate
         """
-        return self.vehicles[0][3] == Board.width
+        return self.depth + self.get_min_distance() + self.get_additional_steps()
+
+    def get_min_distance(self):
+        """
+        gets the minimum distance that has to be covered by the red vehicle
+        :return: minimum steps
+        """
+        return Board.width - self.vehicles[0][3]
+
+    def get_additional_steps(self):
+        """
+        calculates a minimum number of steps that need to be done before completing the board
+        :return: minimum number of steps
+        """
+        steps = 0
+        origin = self.vehicles[0][3]
+
+        # check for vehicles in the direct path of the red vehicle
+        for i in range(1, self.get_min_distance() + 1):
+
+            # get the i places from the red vehicle
+            index = self.board[Board.row][origin + i]
+
+            if index:
+
+                # get the directly blocking vehicle
+                vehicle = self.vehicles[index]
+
+                # center tile of long vehicle in path of red vehicle (1st level blocker)
+                if vehicle[2] < self.vehicles[0][1] < vehicle[3]:
+                    steps += 2
+
+                    # check if 1st level blocker is blocked on both sides (2nd level blocker)
+                    if self.is_blocked(index):
+                        steps += 1
+
+                        # check if 2nd level blockers are blocked on both sides (3d level blocker)
+                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
+                            steps += 1
+
+                # either long or short vehicle in path of red vehicle (1st level blocker)
+                else:
+                    steps += 1
+
+                    # check if 1st level blocker is blocked on both sides (2nd level blocker)
+                    if self.is_blocked(index):
+                        steps += 1
+
+                        # check if 2nd level blockers are blocked on both sides (3d level blocker)
+                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]):
+                            steps += 1
+
+                    # check if 1st level blocker's shortest route is blocked (2nd level blocker)
+                    elif vehicle[2] == self.vehicles[0][1]:
+                        if self.is_blocked(self.board[vehicle[3] + 1][vehicle[1]]) and self.board[vehicle[2] - 2][vehicle[1]]:
+                            steps += 2
+                        elif self.board[vehicle[3] + 1][vehicle[1]]:
+                            steps += 1
+
+                    # check if 1st level blocker's shortest route is blocked (2nd level blocker)
+                    else:
+                        if self.is_blocked(self.board[vehicle[2] - 1][vehicle[1]]) and self.board[vehicle[3] + 2][vehicle[1]]:
+                            steps += 2
+                        elif self.board[vehicle[2] - 1][vehicle[1]]:
+                            steps += 1
+
+        return steps
+
+    def is_blocked(self, index):
+        """
+        checks whether is blocked
+        :param index: index of the vehicle
+        :return: boolean indicating if vehicle is blocked
+        """
+        if not index:
+            return False
+
+        #
+        vehicle = self.vehicles[index]
+
+        # horizontally orientated vehicle
+        if vehicle[0]:
+            if vehicle[2] == 0 and self.board[vehicle[1]][vehicle[2] - 1]:
+                return True
+            elif vehicle[3] == Board.width and self.board[vehicle[1]][vehicle[2] - 1]:
+                return True
+            elif self.board[vehicle[1]][vehicle[2] - 1] and self.board[vehicle[1]][vehicle[3] + 1]:
+                return True
+
+        # vertically orientated vehicle
+        else:
+            if vehicle[2] == 0 and self.board[vehicle[3] + 1][vehicle[1]]:
+                return True
+            elif vehicle[3] == Board.width and self.board[vehicle[2] - 1][vehicle[1]]:
+                return True
+            elif self.board[vehicle[2] - 1][vehicle[1]] and self.board[vehicle[3] + 1][vehicle[1]]:
+                return True
+
+        return False
