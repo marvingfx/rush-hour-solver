@@ -16,16 +16,16 @@ def dfs():
             child = node.move(move[0], move[1])
 
             # check if child has already been processed
-            if child not in closed:
+            if child.get_hash() not in closed:
 
                 # add child to closed list and to the stack
-                closed.add(child)
+                closed[child.get_hash()] = [node.vehicles, move]
                 stack.append(child)
 
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
-                    solutions.append(child)
+                    solutions.append(child.get_hash())
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -47,11 +47,11 @@ else:
     root.load_from_file(sys.argv[1])
 
     # initialize queue, solutions list, and closed archive
-    closed = set()
+    closed = dict()
+    closed[root.get_hash()] = None
     stack = list()
-    solutions = list()
-    closed.add(root)
     stack.append(root)
+    solutions = list()
 
 # start the timer
 start = timer()
@@ -66,10 +66,10 @@ end = timer()
 shortest_solution = list()
 for path in solutions:
     solution = list()
-    current = path
-    while current.parent is not None:
-        solution.append(current.moved)
-        current = current.parent
+    node = path
+    while closed[node] is not None:
+        solution.append(closed[node][1])
+        node = closed[node][0]
     if len(shortest_solution) == 0 or len(shortest_solution) > len(solution):
         solution.reverse()
         shortest_solution = solution
@@ -82,4 +82,4 @@ print
 
 # start visualisation if wanted
 if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
-    vis = visualisation.Visualisation(root, moves)
+    vis = visualisation.Visualisation(root, shortest_solution)

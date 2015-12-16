@@ -17,16 +17,16 @@ def bfs():
             child = node.move(move[0], move[1])
 
             # check if child has already been processed
-            if child not in closed:
+            if child.get_hash() not in closed:
 
                 # add child to closed list and to the queue
-                closed.add(child)
+                closed[child.get_hash()] = [node.vehicles, move]
                 queue.append(child)
 
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
-                    return child
+                    return child.get_hash()
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -48,8 +48,8 @@ else:
     root.load_from_file(sys.argv[1])
 
     # initialize queue and closed archive
-    closed = set()
-    closed.add(root)
+    closed = dict()
+    closed[root.get_hash()] = None
     queue = list()
     queue.append(root)
 
@@ -57,16 +57,16 @@ else:
 start = timer()
 
 # get first route to solution
-current = bfs()
+node = bfs()
 
 # stop the timer
 end = timer()
 
-# get the moves from to the winning state
+# get the moves to the winning node
 moves = []
-while current.parent is not None:
-    moves.append(current.moved)
-    current = current.parent
+while closed[node] is not None:
+    moves.append(closed[node][1])
+    node = closed[node][0]
 moves.reverse()
 
 # print results
