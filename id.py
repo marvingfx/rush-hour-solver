@@ -23,7 +23,7 @@ def iterative_deepening(root):
                 if child.get_hash() not in closed:
 
                     # add child to closed list and to the stack
-                    closed[child.get_hash()] = [node.vehicles, move, child.depth]
+                    closed[child.get_hash()] = [node.vehicles, move]
                     stack.appendleft(child)
 
                     # check if current child is a solution
@@ -31,19 +31,11 @@ def iterative_deepening(root):
                         if child.win():
                             return child.get_hash()
 
-                # check if the depth of the current node is lower than the initial node
-                else:
-                    if closed[child.get_hash()][2] > child.depth:
-
-                        # update closed list and add child to the stack
-                        closed[child.get_hash()] = [node.vehicles, move, child.depth]
-                        stack.appendleft(child)
-
         # continue search with the nodes saved in the open list and increase the maximum depth
         if len(stack) == 0:
             stack.append(root)
             closed.clear()
-            closed[root.get_hash()] = [None, None, 0]
+            closed[root.get_hash()] = None
             max_depth += 1
 
 
@@ -68,7 +60,7 @@ else:
 
     # initialize queue and closed archive
     closed = dict()
-    closed[root.get_hash()] = [None, None, 0]
+    closed[root.get_hash()] = None
     stack = collections.deque()
     stack.append(root)
 
@@ -82,10 +74,9 @@ node = iterative_deepening(root)
 # stop the timer
 end = timer()
 
-
 # get the moves to the winning state
 moves = []
-while closed[node][0] is not None:
+while closed[node] is not None:
     moves.append(closed[node][1])
     node = closed[node][0]
 moves.reverse()
