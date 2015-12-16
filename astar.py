@@ -17,16 +17,16 @@ def astar():
             child = node.move(move[0], move[1])
 
             # check if child has already been processed
-            if child not in closed:
+            if child.get_hash() not in closed:
 
                 # add child to closed list and to the priority queue
-                closed[child] = [node.vehicles, move]
+                closed[child.get_hash()] = [node.vehicles, move]
                 heapq.heappush(pqueue, child)
 
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
-                    return child
+                    return child.get_hash()
 
 # check if file is supplied
 if len(sys.argv) <= 1:
@@ -49,7 +49,7 @@ else:
 
     # initialize priority queue and closed archive
     closed = dict()
-    closed[root] = None
+    closed[root.get_hash()] = None
     pqueue = list()
     heapq.heappush(pqueue, root)
 
@@ -66,7 +66,7 @@ end = timer()
 moves = []
 while closed[node] is not None:
     moves.append(closed[node][1])
-    node = tuple(closed[node][0])
+    node = closed[node][0]
 moves.reverse()
 
 # print results

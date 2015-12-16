@@ -1,4 +1,4 @@
-import sys, rushutils, os.path, visualisation
+import sys, rushutils, os.path
 from timeit import default_timer as timer
 
 
@@ -23,11 +23,11 @@ def beamsearch(width):
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
-                    closed[child] = [node.vehicles, child.moved]
-                    return child
+                    closed[child.get_hash()] = [node.vehicles, child.moved]
+                    return child.get_hash()
 
             # add child to beam if not processed already
-            if child not in closed:
+            if child.get_hash() not in closed:
                 beam.append(child)
 
         # sort the beam so that the most promising members are in front
@@ -36,7 +36,7 @@ def beamsearch(width):
         # add n children to the queue
         for i, child in enumerate(beam):
             if i < width:
-                closed[child] = [node.vehicles, child.moved]
+                closed[child.get_hash()] = [node.vehicles, child.moved]
                 queue.append(child)
 
 # check if file is supplied
@@ -69,7 +69,7 @@ else:
 
     # initialize queue and closed archive
     closed = dict()
-    closed[root] = None
+    closed[root.get_hash()] = None
     queue = list()
     queue.append(root)
 
@@ -86,7 +86,7 @@ end = timer()
 moves = []
 while closed[node] is not None:
     moves.append(closed[node][1])
-    node = tuple(closed[node][0])
+    node = closed[node][0]
 moves.reverse()
 
 # print results
@@ -96,5 +96,5 @@ print moves
 print
 
 # start visualisation if wanted
-if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
-    vis = visualisation.Visualisation(root, moves)
+# if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
+#     vis = visualisation.Visualisation(root, moves)
