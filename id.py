@@ -2,13 +2,12 @@ import sys, rushutils, os.path, collections, visualisation
 from timeit import default_timer as timer
 
 
-def iterative_deepening():
+def iterative_deepening(root):
     """
     calculates one optimal path to a winning state
     :return: a winning node if a solution is found, or nothing if board is unsolvable
     """
     max_depth = 0
-    open_list = list()
 
     while len(stack):
 
@@ -21,33 +20,30 @@ def iterative_deepening():
                 child = node.move(move[0], move[1])
 
                 # check if child has already been processed
-                if child not in closed:
+                if child.get_hash() not in closed:
 
                     # add child to closed list and to the stack
-                    closed[child] = [node, move, child.depth]
+                    closed[child.get_hash()] = [node.vehicles, move, child.depth]
                     stack.appendleft(child)
 
                     # check if current child is a solution
                     if move[0] == 0:
                         if child.win():
-                            return child
+                            return child.get_hash()
 
                 # check if the depth of the current node is lower than the initial node
                 else:
-                    if closed[child][2] > child.depth:
+                    if closed[child.get_hash()][2] > child.depth:
 
                         # update closed list and add child to the stack
-                        closed[child] = [node, move, child.depth]
+                        closed[child.get_hash()] = [node.vehicles, move, child.depth]
                         stack.appendleft(child)
-
-        # save nodes that exceed the depth so that the entire tree does not need to be traversed once again
-        else:
-            open_list.append(node)
 
         # continue search with the nodes saved in the open list and increase the maximum depth
         if len(stack) == 0:
-            stack.extendleft(open_list)
-            open_list = list()
+            stack.append(root)
+            closed.clear()
+            closed[root.get_hash()] = [None, None, 0]
             max_depth += 1
 
 
@@ -72,7 +68,7 @@ else:
 
     # initialize queue and closed archive
     closed = dict()
-    closed[root] = [None, None, 0]
+    closed[root.get_hash()] = [None, None, 0]
     stack = collections.deque()
     stack.append(root)
 
@@ -81,7 +77,7 @@ else:
 start = timer()
 
 # get first route to solution
-node = iterative_deepening()
+node = iterative_deepening(root)
 
 # stop the timer
 end = timer()
@@ -91,7 +87,7 @@ end = timer()
 moves = []
 while closed[node][0] is not None:
     moves.append(closed[node][1])
-    node = (closed[node][0])
+    node = closed[node][0]
 moves.reverse()
 
 # print results
