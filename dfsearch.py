@@ -1,4 +1,4 @@
-import sys, rushutils_uninformed, os.path, visualisation
+import sys, rushutils, os.path, visualisation, random
 from timeit import default_timer as timer
 
 
@@ -12,7 +12,9 @@ def dfs():
         node = stack.pop()
 
         # generate all possible children
-        for move in node.get_moves():
+        moves = node.get_moves()
+        random.shuffle(moves)
+        for move in moves:
             child = node.move(move[0], move[1])
 
             # check if child has already been processed
@@ -25,6 +27,7 @@ def dfs():
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
+                    print child.depth
                     solutions.append(child.get_hash())
 
 # check if file is supplied
@@ -43,7 +46,7 @@ elif not os.path.isfile(sys.argv[1]):
 else:
 
     # initialize root node
-    root = rushutils_uninformed.Board()
+    root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
     # initialize queue, solutions list, and closed archive
