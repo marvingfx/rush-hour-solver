@@ -6,6 +6,7 @@ def dfs():
     """
     calculates a path to a winning state
     """
+    maximum = 7538
     while len(stack):
 
         # get the first node from the stack
@@ -16,6 +17,11 @@ def dfs():
         random.shuffle(moves)
         for move in moves:
             child = node.move(move[0], move[1])
+            if child.depth >= maximum:
+                stack.append(root)
+                closed.clear()
+                closed[root.get_hash()] = None
+                break
 
             # check if child has already been processed
             if child.get_hash() not in closed:
@@ -28,6 +34,8 @@ def dfs():
             if move[0] == 0:
                 if child.win():
                     print child.depth
+                    if child.depth < maximum:
+                        maximum = child.depth
                     solutions.append(child.get_hash())
 
 # check if file is supplied
@@ -80,9 +88,9 @@ for path in solutions:
 # print results
 print "\nExplored %d states in %f seconds" % (len(closed), (end - start))
 print "\nFound %d solutions, shortest solution takes %d moves" % (len(solutions), len(shortest_solution))
-print shortest_solution
+# print shortest_solution
 print
 
 # start visualisation if wanted
-if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
-    vis = visualisation.Visualisation(root, shortest_solution)
+# if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
+#     vis = visualisation.Visualisation(root, shortest_solution)
