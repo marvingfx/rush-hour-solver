@@ -7,6 +7,7 @@ def dfs():
     calculates a path to a winning state
     """
     maximum = 7538
+    begin = timer()
     while len(stack):
 
         # get the first node from the stack
@@ -18,9 +19,11 @@ def dfs():
         for move in moves:
             child = node.move(move[0], move[1])
             if child.depth >= maximum:
+                begin = timer()
                 stack.append(root)
                 closed.clear()
                 closed[root.get_hash()] = None
+                maximum = node.depth
                 break
 
             # check if child has already been processed
@@ -33,21 +36,26 @@ def dfs():
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
-                    print child.depth
                     if child.depth < maximum:
+                        print child.depth
+                        print timer() - begin, "seconds"
+                        begin = timer()
                         maximum = child.depth
+                        stack.append(root)
+                        closed.clear()
+                        closed[root.get_hash()] = None
                     solutions.append(child.get_hash())
 
 # check if file is supplied
 if len(sys.argv) <= 1:
     print "No file is supplied"
-    print "Usage: python dfsearch.py <board.txt>"
+    print "Usage: python rdfsearch.py <board.txt>"
     sys.exit()
 
 # check if file exists
 elif not os.path.isfile(sys.argv[1]):
     print "File can't be loaded"
-    print "Usage: python dfsearch.py <board.txt>"
+    print "Usage: python rdfsearch.py <board.txt>"
     sys.exit()
 
 # load board from file
