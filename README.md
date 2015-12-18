@@ -41,7 +41,7 @@ Larger boards (9x9, 12x12) may require the algorithms to run for several hours
 ####Iterative Deepening
 	python id.py boards/board.txt
 -
-####Stochastic Depth First Search
+####Depth Limited Stochastic Depth First Search
 	python rdfsearch.py boards/board.txt
 Continually searches for a better solution, and does not visualise the solution.
 To quit the algorithm: <kbd>CTRL</kbd> + <kbd>C</kbd>
