@@ -48,7 +48,7 @@ else:
     root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
-    # initialize queue, solutions list, and closed archive
+    # initialize stack, solutions list, and closed archive
     closed = dict()
     closed[root.get_hash()] = None
     stack = list()
