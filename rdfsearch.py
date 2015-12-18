@@ -4,7 +4,8 @@ from timeit import default_timer as timer
 
 def rdfs():
     """
-    calculates a path to a winning state
+    Continually searches for shorter solution. Moves are shuffled to be able to
+    generate shorter paths
     """
 
     # initialize stack and closed archive
