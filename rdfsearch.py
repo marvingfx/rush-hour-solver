@@ -14,6 +14,9 @@ def rdfs():
     stack = list()
     stack.append(root)
 
+    # intialize iteration counter
+    i = 1
+
     # set depth limit
     maximum = 100000
 
@@ -46,14 +49,16 @@ def rdfs():
                         # print results
                         print "\nExplored %d states in %f seconds" % (len(closed), (timer() - start))
                         print "Current shortest path takes %d steps" % child.depth
+                        print "Current iteration %d" % i
 
                         # start over with new maximum
                         stack = list()
                         stack.append(root)
                         closed.clear()
                         closed[root.get_hash()] = None
-                        start = timer()
+                        i += 1
                         maximum = child.depth
+                        start = timer()
                         break
 
         # start over
@@ -62,6 +67,7 @@ def rdfs():
             stack.append(root)
             closed.clear()
             closed[root.get_hash()] = None
+            i += 1
             start = timer()
 
 # check if file is supplied
