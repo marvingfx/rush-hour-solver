@@ -12,8 +12,7 @@ def dfs():
         node = stack.pop()
 
         # generate all possible children
-        moves = node.get_moves()
-        for move in moves:
+        for move in node.get_moves():
             child = node.move(move[0], move[1])
 
             # check if child has already been processed
