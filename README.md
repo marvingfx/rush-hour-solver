@@ -63,6 +63,8 @@ width = 3 if no width is supplied
 Solutions can be visualised after the algorithms finish (except for stochastic depth first search). The visualisation can also be started manually. The script will ask you to enter a string of a board, and a tuple of a path.
 
 	python standalone_vis.py
-  
-*Lirry, Maartje & Marvin*
+
+*Lirry Pinter (10565051)<br>
+Maartje Kruijt (10430563)<br>
+Marvin Straathof (10353860)*
    
