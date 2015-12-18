@@ -1,4 +1,4 @@
-import sys, rushutils, os.path
+import sys, rushutils, os.path, visualisation
 from timeit import default_timer as timer
 
 
@@ -96,5 +96,5 @@ print moves
 print
 
 # start visualisation if wanted
-# if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
-#     vis = visualisation.Visualisation(root, moves)
+if raw_input("View visualisation of solution? (Y/N): ").lower() == 'y':
+    vis = visualisation.Visualisation(root, moves)
