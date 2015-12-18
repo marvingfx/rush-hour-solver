@@ -48,7 +48,7 @@ def rdfs():
 
                         # print results
                         print "\nExplored %d states in %f seconds" % (len(closed), (timer() - start))
-                        print "Current shortest path takes %d steps" % child.depth
+                        print "Current shortest path takes %d moves" % child.depth
                         print "Current iteration %d" % i
 
                         # start over with new maximum
