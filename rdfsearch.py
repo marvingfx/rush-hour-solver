@@ -14,7 +14,7 @@ def rdfs():
     stack = list()
     stack.append(root)
 
-    # intialize iteration counter
+    # initialize iteration counter
     i = 1
 
     # set depth limit
