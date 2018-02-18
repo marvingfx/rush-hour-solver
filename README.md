@@ -37,22 +37,21 @@ Larger boards (9x9, 12x12) may require the algorithms to run for several hours
 
 #### Depth First Search
 	python depthFirstSearch boards/board.txt
--
+
 #### Iterative Deepening
 	python iterativeDeepening.py boards/board.txt
--
+
 #### Depth Limited Stochastic Depth First Search
 	python randomDepthFirstSearch.py boards/board.txt
 Continually searches for a better solution, and does not visualise the solution.
 To quit the algorithm: <kbd>CTRL</kbd> + <kbd>C</kbd>
 
--
 #### Breadth First Search
 	python breadthFirstSearch.py boards/board.txt
--
+
 #### A* Search
 	python aStarSearch.py boards/board.txt
--
+
 #### Beam Search
 	python beamSearch.py boards/board.txt (width)
 width = 3 if no width is supplied
