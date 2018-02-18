@@ -2,7 +2,7 @@ import sys, rushutils, os.path, random
 from timeit import default_timer as timer
 
 
-def rdfs():
+def randomDepthFirstSearch():
     """
     Continually searches for shorter solution. Moves are shuffled to be able to
     generate shorter paths
@@ -73,13 +73,13 @@ def rdfs():
 # check if file is supplied
 if len(sys.argv) <= 1:
     print "No file is supplied"
-    print "Usage: python rdfsearch.py <board.txt>"
+    print "Usage: python randomDepthFirstSearch.py <board.txt>"
     sys.exit()
 
 # check if file exists
 elif not os.path.isfile(sys.argv[1]):
     print "File can't be loaded"
-    print "Usage: python rdfsearch.py <board.txt>"
+    print "Usage: python randomDepthFirstSearch.py <board.txt>"
     sys.exit()
 
 # load board from file
@@ -90,4 +90,4 @@ else:
     root.load_from_file(sys.argv[1])
 
 # get a path
-rdfs()
+randomDepthFirstSearch()

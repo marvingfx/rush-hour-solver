@@ -1,68 +1,88 @@
-import sys, rushutils, os.path, heapq, visualisation
+import sys, rushutils, os.path, visualisation
 from timeit import default_timer as timer
 
 
-def astar():
+def beamsearch(width):
     """
-    calculates one optimal path to a winning state by applying an admissable heuristic
+    calculates one  path to a winning state
+    :param width: width of the beam
     :return: a winning node if a solution is found, or nothing if board is unsolvable
     """
-    while len(pqueue):
+    while len(queue):
 
-        # get the node with the lowest cost estimate
-        node = heapq.heappop(pqueue)
+        # get the first node from the queue
+        node = queue.pop(0)
+
+        # initialize beam
+        beam = list()
 
         # generate all possible children
         for move in node.get_moves():
             child = node.move(move[0], move[1])
 
-            # check if child has already been processed
-            if child.get_hash() not in closed:
-
-                # add child to closed list and to the priority queue
-                closed[child.get_hash()] = [node.vehicles, move]
-                heapq.heappush(pqueue, child)
-
             # check if current child is a solution
             if move[0] == 0:
                 if child.win():
+                    closed[child.get_hash()] = [node.vehicles, child.moved]
                     return child.get_hash()
+
+            # add child to beam if not processed already
+            if child.get_hash() not in closed:
+                beam.append(child)
+
+        # sort the beam so that the most promising members are in front
+        beam.sort()
+
+        # add n children to the queue
+        for i, child in enumerate(beam):
+            if i < width:
+                closed[child.get_hash()] = [node.vehicles, child.moved]
+                queue.append(child)
 
 # check if file is supplied
 if len(sys.argv) <= 1:
     print "No file is supplied"
-    print "Usage: python astar.py <board.txt>"
+    print "Usage: python beamSearch.py <board.txt> (width)"
     sys.exit()
 
 # check if file exists
 elif not os.path.isfile(sys.argv[1]):
     print "File can't be loaded"
-    print "Usage: python astar.py <board.txt>"
+    print "Usage: python beamSearch.py <board.txt> (width)"
     sys.exit()
 
 # load board from file
 else:
 
+    # beam width information
+    width = 3
+
+    if len(sys.argv) > 2:
+        width = int(sys.argv[2])
+        print "Using beam width of %d" % width
+    else:
+        print "Using default beam width of %d" % width
+
     # initialize root node
     root = rushutils.Board()
     root.load_from_file(sys.argv[1])
 
-    # initialize priority queue and closed archive
+    # initialize queue and closed archive
     closed = dict()
     closed[root.get_hash()] = None
-    pqueue = list()
-    heapq.heappush(pqueue, root)
+    queue = list()
+    queue.append(root)
 
 # start the timer
 start = timer()
 
 # get first route to solution
-node = astar()
+node = beamsearch(width)
 
 # stop the timer
 end = timer()
 
-# get the moves to the winning node
+# get the moves from to the winning state
 moves = []
 while closed[node] is not None:
     moves.append(closed[node][1])

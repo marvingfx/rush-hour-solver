@@ -42,13 +42,13 @@ def iterative_deepening(root):
 # check if file is supplied
 if len(sys.argv) <= 1:
     print "No file is supplied"
-    print "Usage: python id.py <board.txt>"
+    print "Usage: python iterativeDeepening.py <board.txt>"
     sys.exit()
 
 # check if file exists
 elif not os.path.isfile(sys.argv[1]):
     print "File can't be loaded"
-    print "Usage: python id.py <board.txt>"
+    print "Usage: python iterativeDeepening.py <board.txt>"
     sys.exit()
 
 # load board from file

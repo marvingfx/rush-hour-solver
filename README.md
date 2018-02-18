@@ -1,4 +1,4 @@
-##RUSH HOUR SOLVER
+## RUSH HOUR SOLVER
 This project focuses on writing algorithms that solve the [Rush Hour](http://thinkfun.com/play-online/rush-hour/) game. Both uninformed and informed search algorithms have been implemented. 
 
 This project includes a number of boards. Board sizes vary from 6x6 to 12x12. Custom boards can easily be created and solved without altering the scripts.
@@ -30,36 +30,36 @@ This project includes a number of boards. Board sizes vary from 6x6 to 12x12. Cu
 
 *disable visualisations if you run PyPy
 
-##Algorithms
+## Algorithms
 
 **Note**<br>
 Larger boards (9x9, 12x12) may require the algorithms to run for several hours
 
-####Depth First Search
-	python dfsearch.py boards/board.txt
+#### Depth First Search
+	python depthFirstSearch boards/board.txt
 -
-####Iterative Deepening
-	python id.py boards/board.txt
+#### Iterative Deepening
+	python iterativeDeepening.py boards/board.txt
 -
-####Depth Limited Stochastic Depth First Search
-	python rdfsearch.py boards/board.txt
+#### Depth Limited Stochastic Depth First Search
+	python randomDepthFirstSearch.py boards/board.txt
 Continually searches for a better solution, and does not visualise the solution.
 To quit the algorithm: <kbd>CTRL</kbd> + <kbd>C</kbd>
 
 -
-####Breadth First Search
-	python bfsearch.py boards/board.txt
+#### Breadth First Search
+	python breadthFirstSearch.py boards/board.txt
 -
-####A* Search
-	python astar.py boards/board.txt
+#### A* Search
+	python aStarSearch.py boards/board.txt
 -
-####Beam Search
-	python beam.py boards/board.txt (width)
+#### Beam Search
+	python beamSearch.py boards/board.txt (width)
 width = 3 if no width is supplied
 
 
 
-##Visualisation
+## Visualisation
 Solutions can be visualised after the algorithms finish (except for stochastic depth first search). The visualisation can also be started manually. The script will ask you to enter a string of a board, and a tuple of a path.
 
 	python standalone_vis.py
