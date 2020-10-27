@@ -13,7 +13,11 @@ class Result:
 def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
     depth = 0
     visited_nodes = set()
-    queue = list([Node(board, depth)])
+    root = Node(board)
+    queue = list([root])
+
+    if root.board.is_final_configuration():
+        return Result(root, len(visited_nodes))
 
     while len(queue) & depth < max_depth:
         current_node = queue.pop(0)
@@ -26,28 +30,37 @@ def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
                 child_board = current_node.board.move_vehicle(move=possible_move)
 
                 if child_board not in visited_nodes:
+                    node = ChildNode(board=child_board, parent=current_node, depth=depth + 1)
                     visited_nodes.add(child_board)
-                    queue.append(ChildNode(board=child_board, parent=current_node, depth=depth + 1))
+                    queue.append(node)
+
+                    if child_board.is_final_configuration():
+                        return Result(node, len(visited_nodes))
 
 
 def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
     depth = 0
     visited_nodes = set()
-    queue = list([Node(board, depth)])
+    root = Node(board)
+    queue = list([root])
+
+    if root.board.is_final_configuration():
+        return Result(root, len(visited_nodes))
 
     while len(queue) & depth < max_depth:
         current_node = queue.pop()
         depth = current_node.depth
 
-        if current_node.board.is_final_configuration():
-            return Result(current_node, len(visited_nodes))
-        else:
-            for possible_move in current_node.board.get_moves():
-                child_board = current_node.board.move_vehicle(move=possible_move)
+        for possible_move in current_node.board.get_moves():
+            child_board = current_node.board.move_vehicle(move=possible_move)
 
-                if child_board not in visited_nodes:
-                    visited_nodes.add(child_board)
-                    queue.append(ChildNode(board=child_board, parent=current_node, depth=depth + 1))
+            if child_board not in visited_nodes:
+                node = ChildNode(board=child_board, parent=current_node, depth=depth + 1)
+                visited_nodes.add(child_board)
+                queue.append(node)
+
+                if child_board.is_final_configuration():
+                    return Result(node, len(visited_nodes))
 
 
 def a_star(board: Board, max_depth: int = 1000) -> Result:
@@ -57,17 +70,23 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
     root = Node(board, depth)
     heapq.heappush(sorted_list, root)
 
+    if root.board.is_final_configuration():
+        return Result(root, len(visited_nodes))
+
     while len(sorted_list) & depth < max_depth:
         current_node = heapq.heappop(sorted_list)
         depth = current_node.depth
 
-        if current_node.board.is_final_configuration():
-            return Result(current_node, len(visited_nodes))
-        else:
-            for possible_move in current_node.board.get_moves():
-                child_board = current_node.board.move_vehicle(move=possible_move)
+        for possible_move in current_node.board.get_moves():
+            child_board = current_node.board.move_vehicle(move=possible_move)
 
-                if child_board not in visited_nodes:
-                    visited_nodes.add(child_board)
-                    heapq.heappush(sorted_list, ChildNode(board=child_board, parent=current_node, depth=depth + 1,
-                                                          value=child_board.score() + depth))
+            if child_board not in visited_nodes:
+                visited_nodes.add(child_board)
+                node = ChildNode(board=child_board,
+                                 parent=current_node,
+                                 depth=depth + 1,
+                                 value=child_board.score() + depth)
+                heapq.heappush(sorted_list, node)
+
+                if child_board.is_final_configuration():
+                    return Result(node, len(visited_nodes))
