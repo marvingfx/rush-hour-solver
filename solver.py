@@ -1,5 +1,5 @@
 from model.board import Board
-from algorithm.algorithm import breadth_first_search, depth_first_search, a_star, beam_search
+from algorithm.algorithm import breadth_first_search, iterative_deepening_depth_first_search, depth_first_search, a_star, beam_search
 import time
 
 if __name__ == '__main__':
@@ -12,7 +12,7 @@ if __name__ == '__main__':
         [8, -1, -1, 5, 6, 6]
     ])
 
-    methods = [breadth_first_search, depth_first_search, a_star, beam_search]
+    methods = [breadth_first_search, depth_first_search, iterative_deepening_depth_first_search, a_star, beam_search]
     for method in methods:
         start = time.perf_counter()
         result = method(board)
