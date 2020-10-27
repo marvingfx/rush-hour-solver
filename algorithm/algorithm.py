@@ -90,3 +90,38 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
 
                 if child_board.is_final_configuration():
                     return Result(node, len(visited_nodes))
+
+
+def beam_search(board: Board, width: int = 3, max_depth: int = 1000) -> Result:
+    depth = 0
+    visited_nodes = set()
+    root = Node(board, depth)
+    queue = list([root])
+
+    if root.board.is_final_configuration():
+        return Result(root, len(visited_nodes))
+
+    while len(queue) & depth < max_depth:
+        current_node = queue.pop(0)
+        depth = current_node.depth
+
+        beam = list()
+
+        for possible_move in current_node.board.get_moves():
+            child_board = current_node.board.move_vehicle(move=possible_move)
+
+            if child_board not in visited_nodes:
+                visited_nodes.add(child_board)
+                node = ChildNode(board=child_board,
+                                 parent=current_node,
+                                 depth=depth + 1,
+                                 value=child_board.score() + depth)
+
+                heapq.heappush(beam, node)
+
+                if child_board.is_final_configuration():
+                    return Result(node, len(visited_nodes))
+
+        for i, child in enumerate(beam):
+            if i < width:
+                queue.append(child)
