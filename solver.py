@@ -1,5 +1,5 @@
 from model.board import Board
-from algorithm.algorithm import breadth_first_search, depth_first_search
+from algorithm.algorithm import breadth_first_search, depth_first_search, a_star
 
 if __name__ == '__main__':
     board = Board.from_matrix([
@@ -10,6 +10,12 @@ if __name__ == '__main__':
         [8, 7, 7, 5, -1, -1],
         [8, -1, -1, 5, 6, 6]
     ])
-    node = breadth_first_search(board)
-    node = depth_first_search(board)
 
+    methods = [breadth_first_search, depth_first_search, a_star]
+    for method in methods:
+        result = method(board)
+        print(
+            f'found solution of {result.node.depth} '
+            f'steps with {method.__name__}. '
+            f'Explored {result.number_of_explored_states} states.'
+        )

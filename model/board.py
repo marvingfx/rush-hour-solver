@@ -29,7 +29,7 @@ class Board:
 
             vehicles = tuple(Vehicle(vehicle_id, tuple(positions), positions[0][0] == positions[-1][0]) for
                              vehicle_id, positions in
-                             symbol_dict.items() if not vehicle_id == -1)
+                             sorted(symbol_dict.items()) if vehicle_id >= 0)
 
             return Board(len(matrix), vehicles)
 
@@ -37,22 +37,24 @@ class Board:
         red_vehicle = next(vehicle for vehicle in self.vehicles if vehicle.id == 0)
         return red_vehicle.positions[-1][1] == self.width - 1
 
+    def get_minimum_steps_required(self) -> int:
+        return self.width - self.vehicles[0].positions[-1][1]
+
+    def score(self) -> int:
+        return self.get_minimum_steps_required()
+
     def get_moves(self) -> Iterator["Move"]:
         for index, vehicle in enumerate(self.vehicles):
             backward_position = None
             forward_position = None
+            horizontal_move = 1 if vehicle.horizontal else 0
+            vertical_move = abs(horizontal_move - 1)
 
-            if vehicle.horizontal:
-                if vehicle.positions[0][1] > 0:
-                    backward_position = (vehicle.positions[0][0], vehicle.positions[0][1] - 1)
-                if vehicle.positions[-1][1] < self.width - 1:
-                    forward_position = (vehicle.positions[-1][0], vehicle.positions[-1][1] + 1)
-
-            else:
-                if vehicle.positions[0][0] > 0:
-                    backward_position = (vehicle.positions[0][0] - 1, vehicle.positions[0][1])
-                if vehicle.positions[-1][0] < self.width - 1:
-                    forward_position = (vehicle.positions[-1][0] + 1, vehicle.positions[-1][1])
+            if vehicle.positions[0][horizontal_move] > 0:
+                backward_position = (vehicle.positions[0][0] - vertical_move, vehicle.positions[0][1] - horizontal_move)
+            if vehicle.positions[-1][horizontal_move] < self.width - 1:
+                forward_position = (
+                vehicle.positions[-1][0] + vertical_move, vehicle.positions[-1][1] + horizontal_move)
 
             for other_vehicle in self.vehicles:
                 if forward_position in other_vehicle.positions:
