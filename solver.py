@@ -25,7 +25,7 @@ ALGORITHM_NAME_MAPPING = {
     required=True,
     type=click.Path(exists=True, readable=True),
 )
-def test(algorithm: str, board: str) -> None:
+def solve(algorithm: str, board: str) -> None:
     algorithm_implementation = ALGORITHM_NAME_MAPPING[algorithm]
     board_to_solve = Board.from_csv(board)
 
@@ -41,4 +41,4 @@ def test(algorithm: str, board: str) -> None:
 
 
 if __name__ == "__main__":
-    test()
+    solve()
