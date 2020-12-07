@@ -1,9 +1,0 @@
-y,y,x,x,w,.,.,v,.
-t,u,u,u,w,s,s,v,.
-t,.,r,r,q,p,.,o,o
-.,.,n,l,q,p,m,m,m
-?,?,n,l,.,.,.,.,.
-.,k,.,l,j,j,i,i,h
-g,k,f,f,e,d,d,d,h
-g,.,c,c,e,b,b,.,h
-g,a,a,a,e,.,.,.,.
