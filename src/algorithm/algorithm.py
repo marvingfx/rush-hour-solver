@@ -1,8 +1,10 @@
-from model.node import Node, ChildNode
-from model.board import Board
+import collections
 import heapq
 from dataclasses import dataclass
-import collections
+from typing import List, Set
+
+from ..model.board import Board
+from ..model.node import ChildNode, Node
 
 
 class NoSolutionFoundException(Exception):
@@ -17,7 +19,7 @@ class Result:
 
 def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
     depth = 0
-    visited_nodes = set()
+    visited_nodes: Set[Board] = set()
     root = Node(board)
     queue = list([root])
 
@@ -35,7 +37,9 @@ def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
                 child_board = current_node.board.move_vehicle(move=possible_move)
 
                 if child_board not in visited_nodes:
-                    node = ChildNode(board=child_board, parent=current_node, depth=depth + 1)
+                    node = ChildNode(
+                        board=child_board, parent=current_node, depth=depth + 1
+                    )
                     visited_nodes.add(child_board)
                     queue.append(node)
 
@@ -47,7 +51,7 @@ def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
 
 def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
     depth = 0
-    visited_nodes = set()
+    visited_nodes: Set[Board] = set()
     root = Node(board)
     queue = list([root])
 
@@ -62,7 +66,9 @@ def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
             child_board = current_node.board.move_vehicle(move=possible_move)
 
             if child_board not in visited_nodes:
-                node = ChildNode(board=child_board, parent=current_node, depth=depth + 1)
+                node = ChildNode(
+                    board=child_board, parent=current_node, depth=depth + 1
+                )
                 visited_nodes.add(child_board)
                 queue.append(node)
 
@@ -72,9 +78,11 @@ def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
     raise NoSolutionFoundException
 
 
-def iterative_deepening_depth_first_search(board: Board, max_depth: int = 1000) -> Result:
+def iterative_deepening_depth_first_search(
+    board: Board, max_depth: int = 1000
+) -> Result:
     local_max_depth = 1
-    visited_nodes = set()
+    visited_nodes: Set[Node] = set()
     root = Node(board)
     stack = collections.deque()
     stack.append(root)
@@ -90,7 +98,9 @@ def iterative_deepening_depth_first_search(board: Board, max_depth: int = 1000) 
             child_board = current_node.board.move_vehicle(move=possible_move)
 
             if child_board not in visited_nodes and depth <= local_max_depth:
-                node = ChildNode(board=child_board, parent=current_node, depth=depth + 1)
+                node = ChildNode(
+                    board=child_board, parent=current_node, depth=depth + 1
+                )
                 visited_nodes.add(child_board)
                 stack.append(node)
 
@@ -108,8 +118,8 @@ def iterative_deepening_depth_first_search(board: Board, max_depth: int = 1000) 
 
 def a_star(board: Board, max_depth: int = 1000) -> Result:
     depth = 0
-    visited_nodes = set()
-    sorted_list = list()
+    visited_nodes: Set[Board] = set()
+    sorted_list: List[Node] = list()
     root = Node(board, depth)
     heapq.heappush(sorted_list, root)
 
@@ -125,10 +135,12 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
 
             if child_board not in visited_nodes:
                 visited_nodes.add(child_board)
-                node = ChildNode(board=child_board,
-                                 parent=current_node,
-                                 depth=depth + 1,
-                                 value=child_board.score() + depth)
+                node = ChildNode(
+                    board=child_board,
+                    parent=current_node,
+                    depth=depth + 1,
+                    value=child_board.get_minimum_cost() + depth,
+                )
                 heapq.heappush(sorted_list, node)
 
                 if child_board.is_final_configuration():
@@ -137,11 +149,11 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
     raise NoSolutionFoundException
 
 
-def beam_search(board: Board, width: int = 3, max_depth: int = 1000) -> Result:
+def beam_search(board: Board, width: int = 2, max_depth: int = 1000) -> Result:
     depth = 0
-    visited_nodes = set()
+    visited_nodes: Set[Board] = set()
     root = Node(board, depth)
-    queue = list([root])
+    queue: List[Node] = list([root])
 
     if root.board.is_final_configuration():
         return Result(root, len(visited_nodes))
@@ -150,17 +162,19 @@ def beam_search(board: Board, width: int = 3, max_depth: int = 1000) -> Result:
         current_node = queue.pop(0)
         depth = current_node.depth
 
-        beam = list()
+        beam: List[Node] = list()
 
         for possible_move in current_node.board.get_moves():
             child_board = current_node.board.move_vehicle(move=possible_move)
 
             if child_board not in visited_nodes:
                 visited_nodes.add(child_board)
-                node = ChildNode(board=child_board,
-                                 parent=current_node,
-                                 depth=depth + 1,
-                                 value=child_board.score() + depth)
+                node = ChildNode(
+                    board=child_board,
+                    parent=current_node,
+                    depth=depth + 1,
+                    value=child_board.get_minimum_cost() + depth,
+                )
 
                 heapq.heappush(beam, node)
 
