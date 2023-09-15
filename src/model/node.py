@@ -1,11 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ..model.board import Board
 
 
 @dataclass(frozen=True)
 class Node:
-    board: Board = Board(width=0, vehicles=tuple())
+    board: Board = field(default=Board())
     depth: int = 0
     value: int = 0
 
@@ -15,4 +15,4 @@ class Node:
 
 @dataclass(frozen=True)
 class ChildNode(Node):
-    parent: Node = Node()
+    parent: Node = field(default=Node())

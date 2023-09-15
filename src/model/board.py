@@ -8,8 +8,8 @@ from ..model.vehicle import Vehicle
 
 @dataclass(frozen=True)
 class Board:
-    width: int
-    vehicles: Tuple[Vehicle]
+    width: int = 0
+    vehicles: Tuple[Vehicle, ...] = ()
 
     def move_vehicle(self, move: Move) -> "Board":
         vehicles = (
@@ -23,7 +23,7 @@ class Board:
     def from_matrix(matrix: List[List[int]]) -> "Board":
         if len(matrix) < 6 or len(matrix) is not len(matrix[0]):
             raise Exception(
-                "Wrong shape for matrix. Matrices should be square and have at least 6 rows and columns"
+                "Wrong shape for matrix. Matrices should be square and have at least 6 rows and columns"  # noqa: E501
             )
         else:
             symbol_dict = dict()

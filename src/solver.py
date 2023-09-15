@@ -1,12 +1,17 @@
 import time
+from typing import Callable
 
 import click
 
-from src.algorithm.algorithm import (a_star, beam_search, breadth_first_search,
-                                     depth_first_search)
-from src.model.board import Board
+from .algorithm import (
+    a_star,
+    beam_search,
+    breadth_first_search,
+    depth_first_search,
+)
+from .model import Board
 
-ALGORITHM_NAME_MAPPING = {
+ALGORITHM_NAME_MAPPING: dict[str, Callable] = {
     "astar": a_star,
     "beam": beam_search,
     "bfs": breadth_first_search,
@@ -18,7 +23,7 @@ ALGORITHM_NAME_MAPPING = {
 @click.option(
     "--algorithm",
     required=True,
-    type=click.Choice(ALGORITHM_NAME_MAPPING.keys(), case_sensitive=True),
+    type=click.Choice(list(ALGORITHM_NAME_MAPPING.keys()), case_sensitive=True),
 )
 @click.option(
     "--board",

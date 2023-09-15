@@ -7,7 +7,7 @@ from ..model.move import Move
 @dataclass(frozen=True)
 class Vehicle:
     id: int
-    tiles: Tuple[Tuple[int, int]]
+    tiles: Tuple[Tuple[int, int], ...]
     horizontal: bool
 
     def move(self, move: Move) -> "Vehicle":
