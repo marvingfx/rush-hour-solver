@@ -6,6 +6,13 @@ from ..model.move import Move
 from ..model.vehicle import Vehicle
 
 
+def csv_to_matrix(file_path: str) -> List[List[int]]:
+    with open(file_path, "r") as csv_file:
+        csv_reader = reader(csv_file)
+        matrix = [[int(tile) for tile in line] for line in csv_reader]
+        return matrix
+
+
 @dataclass(frozen=True)
 class Board:
     width: int = 0
@@ -49,10 +56,7 @@ class Board:
 
     @staticmethod
     def from_csv(file_path: str) -> "Board":
-        with open(file_path, "r") as csv_file:
-            csv_reader = reader(csv_file)
-            matrix = [[int(tile) for tile in line] for line in csv_reader]
-            return Board.from_matrix(matrix)
+        return Board.from_matrix(csv_to_matrix(file_path=file_path))
 
     def is_final_configuration(self) -> bool:
         return self.vehicles[0].tiles[-1][1] == self.width - 1

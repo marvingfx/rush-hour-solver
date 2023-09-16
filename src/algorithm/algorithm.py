@@ -4,7 +4,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import List, MutableSequence, Set
 
-from ..model import Board, ChildNode, Node
+from ..model import Board, Node
 
 
 class NoSolutionFoundException(Exception):
@@ -20,7 +20,7 @@ class Result:
 def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
     depth = 0
     visited_boards: Set[Board] = set()
-    root = Node(board)
+    root = Node(board=board)
     queue = list([root])
 
     if root.board.is_final_configuration():
@@ -37,9 +37,7 @@ def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
                 child_board = current_node.board.move_vehicle(move=possible_move)
 
                 if child_board not in visited_boards:
-                    node = ChildNode(
-                        board=child_board, parent=current_node, depth=depth + 1
-                    )
+                    node = Node(board=child_board, parent=current_node, depth=depth + 1)
                     visited_boards.add(child_board)
                     queue.append(node)
 
@@ -52,7 +50,7 @@ def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
 def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
     depth = 0
     visited_boards: Set[Board] = set()
-    root = Node(board)
+    root = Node(board=board)
     queue = list([root])
 
     if root.board.is_final_configuration():
@@ -66,9 +64,7 @@ def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
             child_board = current_node.board.move_vehicle(move=possible_move)
 
             if child_board not in visited_boards:
-                node = ChildNode(
-                    board=child_board, parent=current_node, depth=depth + 1
-                )
+                node = Node(board=child_board, parent=current_node, depth=depth + 1)
                 visited_boards.add(child_board)
                 queue.append(node)
 
@@ -83,7 +79,7 @@ def iterative_deepening_depth_first_search(
 ) -> Result:
     local_max_depth = 1
     visited_boards: Set[Board] = set()
-    root = Node(board)
+    root = Node(board=board)
     stack: deque[Node] = deque()
     stack.append(root)
 
@@ -98,9 +94,7 @@ def iterative_deepening_depth_first_search(
             child_board = current_node.board.move_vehicle(move=possible_move)
 
             if child_board not in visited_boards and depth <= local_max_depth:
-                node = ChildNode(
-                    board=child_board, parent=current_node, depth=depth + 1
-                )
+                node = Node(board=child_board, parent=current_node, depth=depth + 1)
                 visited_boards.add(child_board)
                 stack.append(node)
 
@@ -120,7 +114,7 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
     depth = 0
     visited_boards: Set[Board] = set()
     sorted_list: List[Node] = list()
-    root = Node(board, depth)
+    root = Node(board=board, depth=depth)
     heapq.heappush(sorted_list, root)
 
     if root.board.is_final_configuration():
@@ -135,7 +129,7 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
 
             if child_board not in visited_boards:
                 visited_boards.add(child_board)
-                node = ChildNode(
+                node = Node(
                     board=child_board,
                     parent=current_node,
                     depth=depth + 1,
@@ -152,7 +146,7 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
 def beam_search(board: Board, width: int = 2, max_depth: int = 1000) -> Result:
     depth = 0
     visited_boards: Set[Board] = set()
-    root = Node(board, depth)
+    root = Node(board=board, depth=depth)
     queue: List[Node] = list([root])
 
     if root.board.is_final_configuration():
@@ -169,7 +163,7 @@ def beam_search(board: Board, width: int = 2, max_depth: int = 1000) -> Result:
 
             if child_board not in visited_boards:
                 visited_boards.add(child_board)
-                node = ChildNode(
+                node = Node(
                     board=child_board,
                     parent=current_node,
                     depth=depth + 1,

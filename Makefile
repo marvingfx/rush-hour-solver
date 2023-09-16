@@ -32,4 +32,4 @@ fix_ruff:
 fix: fix_black fix_ruff
 	
 test:
-	poetry run pytest $(TEST_DIR)
+	poetry run pytest -vv $(TEST_DIR) --cov $(MAIN_DIR)
