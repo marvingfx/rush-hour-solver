@@ -136,8 +136,72 @@ def test_is_final_configuration(matrix: list[list[int]], expected_result: bool):
         ),
     ],
 )
-def test_calculate_number_of_tiles_from_exit(matrix: list[list[int]], expected_result: int):
-    assert len(Board.from_matrix(matrix=matrix).get_tiles_to_cover_by_red()) == expected_result
+def test_get_tiles_to_cover_by_red(matrix: list[list[int]], expected_result: int):
+    assert (
+        len(Board.from_matrix(matrix=matrix).get_tiles_to_cover_by_red())
+        == expected_result
+    )
 
-    
-    
+
+@pytest.mark.parametrize(
+    "matrix, expected_result",
+    [
+        (
+            [
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, 1],
+                [-1, -1, -1, 0, 0, 1],
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+            ],
+            [
+                Vehicle(
+                    id=1,
+                    tiles=((1, 5), (2, 5)),
+                    horizontal=False,
+                ),
+            ],
+        ),
+        (
+            [
+                [-1, -1, -1, -1, 2, -1],
+                [-1, -1, -1, -1, 2, -1],
+                [-1, -1, 0, 0, 2, 1],
+                [-1, -1, -1, -1, -1, 1],
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+            ],
+            [
+                Vehicle(
+                    id=1,
+                    tiles=((2, 5), (3, 5)),
+                    horizontal=False,
+                ),
+                Vehicle(
+                    id=2,
+                    tiles=((0, 4), (1, 4), (2, 4)),
+                    horizontal=False,
+                ),
+            ],
+        ),
+        (
+            [
+                [-1, -1, -1, -1, -1, -1],
+                [0, 0, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1],
+            ],
+            [],
+        ),
+    ],
+)
+def test_get_vehicles_in_the_way_of_red(
+    matrix: list[list[int]], expected_result: list[Vehicle]
+):
+    assert (
+        list(Board.from_matrix(matrix=matrix).vehicles_in_the_way_of_red())
+        == expected_result
+    )
