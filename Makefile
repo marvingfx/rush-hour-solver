@@ -5,8 +5,8 @@ install:
 	@poetry install
 
 update:
-	@poetry self update && \
-	@poetry update && \
+	@poetry self update
+	@poetry update
 	@poetry up --latest
 	
 check_black:
