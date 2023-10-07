@@ -21,7 +21,6 @@ Custom boards have to fulfill a couple of requirements:
 - [ ] Modify cost functions to include more information.
 - [ ] Implement more algorithms
 - [ ] Implement tests
-- [ ] Fix typing / formatting / syntax issues
 - [ ] OUTPUT: return path
 - [ ] OUTPUT: visualize path
    
