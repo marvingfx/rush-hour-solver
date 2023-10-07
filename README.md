@@ -7,9 +7,21 @@ This project focuses on writing algorithms that solve the [Rush Hour](http://thi
 3. Clone the repository.
 4. Execute `poetry install` in the root of the repository.
 
-## Running the code
-Once everything is installed, you can run `python solver.py --algorithm [ALROGRITHM] --board [BOARD CSV]`. Use `python solver.py --help
-` to find what the options are.
+## Usage
+```
+Usage: python -m src.solver [OPTIONS]
+
+Options:
+  --algorithm [astar|beam|bfs|dfs]
+                                  The algorighm of your choosing to solve the
+                                  board  [required]
+  --board PATH                    The path of the board file that you want to
+                                  solve  [required]
+  --visualize                     Whether you want to interactively visualize
+                                  the solution
+  --help                          Show this message and exit.
+```
+For example: `python -m src.solver --board boards/board1.csv --algorithm bfs --visualize`
 
 ## Creating custom boards
 Custom boards have to fulfill a couple of requirements:
@@ -22,5 +34,4 @@ Custom boards have to fulfill a couple of requirements:
 - [ ] Implement more algorithms
 - [ ] Implement tests
 - [ ] OUTPUT: return path
-- [ ] OUTPUT: visualize path
    

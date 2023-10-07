@@ -130,12 +130,15 @@ class Board:
             if backward_tile is not None:
                 yield Move(vehicle_id=vehicle.id, vehicle_index=index, move=-1)
 
-    def __repr__(self):
+    def to_matrix(self) -> list[list[int]]:
         matrix = [[-1 for _ in range(self.width)] for _ in range(self.width)]
         for vehicle in self.vehicles:
             for tile in vehicle.tiles:
                 matrix[tile[0]][tile[1]] = vehicle.id
-        return str(matrix)
+        return matrix
+
+    def __repr__(self):
+        return str(self.to_matrix())
 
     def __hash__(self):
         return hash(self.vehicles)

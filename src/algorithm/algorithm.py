@@ -18,6 +18,19 @@ class Result:
 
 
 def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
+    """Breadth first search
+    Does not care about value
+
+    Args:
+        board (Board): _description_
+        max_depth (int, optional): _description_. Defaults to 1000.
+
+    Raises:
+        NoSolutionFoundException: _description_
+
+    Returns:
+        Result: _description_
+    """
     depth = 0
     visited_boards: Set[Board] = set()
     root = Node(board=board)
@@ -48,6 +61,19 @@ def breadth_first_search(board: Board, max_depth: int = 1000) -> Result:
 
 
 def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
+    """Depth first search
+    Does not care about value
+
+    Args:
+        board (Board): _description_
+        max_depth (int, optional): _description_. Defaults to 10000.
+
+    Raises:
+        NoSolutionFoundException: _description_
+
+    Returns:
+        Result: _description_
+    """
     depth = 0
     visited_boards: Set[Board] = set()
     root = Node(board=board)
@@ -77,6 +103,18 @@ def depth_first_search(board: Board, max_depth: int = 10000) -> Result:
 def iterative_deepening_depth_first_search(
     board: Board, max_depth: int = 1000
 ) -> Result:
+    """Iterative deepening dept first search
+
+    Args:
+        board (Board): _description_
+        max_depth (int, optional): _description_. Defaults to 1000.
+
+    Raises:
+        NoSolutionFoundException: _description_
+
+    Returns:
+        Result: _description_
+    """
     local_max_depth = 1
     visited_boards: Set[Board] = set()
     root = Node(board=board)
@@ -111,6 +149,18 @@ def iterative_deepening_depth_first_search(
 
 
 def a_star(board: Board, max_depth: int = 1000) -> Result:
+    """A start
+
+    Args:
+        board (Board): _description_
+        max_depth (int, optional): _description_. Defaults to 1000.
+
+    Raises:
+        NoSolutionFoundException: _description_
+
+    Returns:
+        Result: _description_
+    """
     depth = 0
     visited_boards: Set[Board] = set()
     sorted_list: List[Node] = list()
@@ -144,6 +194,19 @@ def a_star(board: Board, max_depth: int = 1000) -> Result:
 
 
 def beam_search(board: Board, width: int = 2, max_depth: int = 1000) -> Result:
+    """beam search
+
+    Args:
+        board (Board): _description_
+        width (int, optional): _description_. Defaults to 2.
+        max_depth (int, optional): _description_. Defaults to 1000.
+
+    Raises:
+        NoSolutionFoundException: _description_
+
+    Returns:
+        Result: _description_
+    """
     depth = 0
     visited_boards: Set[Board] = set()
     root = Node(board=board, depth=depth)
